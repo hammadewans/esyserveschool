@@ -124,7 +124,15 @@
               </ul><!-- End Portfolio Filters -->
             </div>
           </div>
-
+              <button onclick="
+              let dbName = 'esyserve_db';
+              let request = indexedDB.deleteDatabase(dbName);
+              request.onsuccess = () => location.reload();
+              request.onerror = () => location.reload();
+              request.onblocked = () => location.reload();
+            ">
+              Reload Changes
+            </button>
           <div class="row gy-4 isotope-container" id="portfolio-container" data-aos="fade-up" data-aos-delay="200" style="position: relative; height: 1344px;">
 
           </div><!-- End Portfolio Container -->
@@ -180,3 +188,4 @@
 
 
 </html>
+
