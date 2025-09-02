@@ -1,29 +1,47 @@
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("portfolio-container");
 
-  fetch('https://esyserve.top/fetch/student', {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => {
-    if (response.status === 204) {
-      console.warn('Data not Added Yet');
-      return;
-    }
-    if (response.status === 401) {
-      window.location.href = "login.html";
-      return;
-    }
-    if (!response.ok) throw new Error('Network error');
-    return response.json();
-  })
-  .then(data => {
-    if (!data) return; // Already redirected, no need to proceed
+  // Try loading from localStorage first
+  const cached = localStorage.getItem("students");
+  if (cached) {
+    const data = JSON.parse(cached);
+    renderStudents(data);
+  } else {
+    // If not cached, fetch from backend
+    fetch('https://esyserve.top/fetch/student', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (response.status === 204) {
+        console.warn('Data not Added Yet');
+        return;
+      }
+      if (response.status === 401) {
+        window.location.href = "login.html";
+        return;
+      }
+      if (!response.ok) throw new Error('Network error');
+      return response.json();
+    })
+    .then(data => {
+      if (!data) return;
 
+      // Save in localStorage for future reloads
+      localStorage.setItem("students", JSON.stringify(data));
 
+      renderStudents(data);
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+    });
+  }
+
+  // 🔹 render students function
+  function renderStudents(data) {
     data.forEach(student => {
       const studentName = window.DataHandler.capitalize(student.student);
       const studentClass = window.DataHandler.capitalize(student.class);
@@ -48,14 +66,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     initIsotopeLayout();
-    GLightbox({
-      selector: '.glightbox'
-    });
-  })
-  .catch(error => {
-    console.error('Fetch error:', error);
-  });
+    GLightbox({ selector: '.glightbox' });
+  }
 
+  // 🔹 isotope init
   function initIsotopeLayout() {
     const isoParent = container.closest('.isotope-layout');
     const isoInstance = new Isotope(container, {
@@ -80,6 +94,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
-
-
-
