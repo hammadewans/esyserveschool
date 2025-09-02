@@ -1,70 +1,82 @@
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("portfolio-container");
 
-  fetch('https://esyserve.top/fetch/student', {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => {
-    if (response.status === 204) {
-      console.warn('Data not Added Yet');
-      return;
-    }
-    if (response.status === 401) {
-      window.location.href = "login.html";
-      return;
-    }
-    if (!response.ok) throw new Error('Network error');
-    return response.json();
-  })
-  .then(users => {
-    if (!users) return; // No data or redirected
+  // 🔹 Assume you already have current user ID or email from login/session
+  // Replace this with your actual user identifier
+  const currentUserId = localStorage.getItem("currentUserId");  
 
-    users.forEach(user => {
-      // Create a heading for each user
-      const userHeader = document.createElement("h3");
-      userHeader.textContent = `User: ${window.DataHandler.capitalize(user.username)}`;
-      container.appendChild(userHeader);
+  // Storage key for this user
+  const storageKey = `students_${currentUserId}`;
 
-      // A row to hold this user’s students
-      const row = document.createElement("div");
-      row.className = "row g-4";
-      container.appendChild(row);
+  // Check if cached data exists
+  const cached = localStorage.getItem(storageKey);
+  if (cached) {
+    const data = JSON.parse(cached);
+    renderStudents(data);
+  } else {
+    // Fetch from backend if not cached
+    fetch('https://esyserve.top/fetch/student', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (response.status === 204) {
+        console.warn('Data not Added Yet');
+        return;
+      }
+      if (response.status === 401) {
+        window.location.href = "login.html";
+        return;
+      }
+      if (!response.ok) throw new Error('Network error');
+      return response.json();
+    })
+    .then(data => {
+      if (!data) return; // Already redirected, no need to proceed
 
-      // Render each student
-      user.students.forEach(student => {
-        const studentName = window.DataHandler.capitalize(student.student);
-        const studentClass = window.DataHandler.capitalize(student.class);
-        const studentSection = window.DataHandler.capitalize(student.sectionclass);
+      // Save to user-specific storage
+      localStorage.setItem(storageKey, JSON.stringify(data));
 
-        const div = document.createElement("div");
-        div.className = `col-lg-4 col-md-6 portfolio-item isotope-item filter-${student.class}`;
-        div.innerHTML = `
-          <div class="portfolio-content h-100">
-            <img src="${student.imgstudent}" class="img-fluid" alt="${studentName}">
-            <div class="portfolio-info">
-              <h4>${studentName}</h4>
-              <p>Class: ${studentClass}, Section: ${studentSection}</p>
-              <div>
-                <a href="${student.imgstudent}" title="${studentName}" data-gallery="portfolio-gallery-${studentClass}" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                <a href="student-details.html?studentid=${student.studentid}" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-              </div>
+      renderStudents(data);
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+    });
+  }
+
+  // 🔹 Same rendering logic
+  function renderStudents(data) {
+    data.forEach(student => {
+      const studentName = window.DataHandler.capitalize(student.student);
+      const studentClass = window.DataHandler.capitalize(student.class);
+      const studentSection = window.DataHandler.capitalize(student.sectionclass);
+
+      const div = document.createElement("div");
+      div.className = `col-lg-4 col-md-6 portfolio-item isotope-item filter-${student.class}`;
+      div.innerHTML = `
+        <div class="portfolio-content h-100">
+          <img src="${student.imgstudent}" class="img-fluid" alt="${studentName}">
+          <div class="portfolio-info">
+            <h4>${studentName}</h4>
+            <p>Class: ${studentClass}, Section: ${studentSection}</p>
+            <div>
+              <a href="${student.imgstudent}" title="${studentName}" data-gallery="portfolio-gallery-${studentClass}" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
+              <a href="student-details.html?studentid=${student.studentid}" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
             </div>
           </div>
-        `;
-        row.appendChild(div);
-      });
+        </div>
+      `;
+      container.appendChild(div);
     });
 
     initIsotopeLayout();
-    GLightbox({ selector: '.glightbox' });
-  })
-  .catch(error => {
-    console.error('Fetch error:', error);
-  });
+    GLightbox({
+      selector: '.glightbox'
+    });
+  }
 
   function initIsotopeLayout() {
     const isoParent = container.closest('.isotope-layout');
