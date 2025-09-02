@@ -1,75 +1,71 @@
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("portfolio-container");
 
-  // Try loading from localStorage first
-  const cached = localStorage.getItem("students");
-  if (cached) {
-    const data = JSON.parse(cached);
-    renderStudents(data);
-  } else {
-    // If not cached, fetch from backend
-    fetch('https://esyserve.top/fetch/student', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => {
-      if (response.status === 204) {
-        console.warn('Data not Added Yet');
-        return;
-      }
-      if (response.status === 401) {
-        window.location.href = "login.html";
-        return;
-      }
-      if (!response.ok) throw new Error('Network error');
-      return response.json();
-    })
-    .then(data => {
-      if (!data) return;
+  fetch('https://esyserve.top/fetch/student', {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => {
+    if (response.status === 204) {
+      console.warn('Data not Added Yet');
+      return;
+    }
+    if (response.status === 401) {
+      window.location.href = "login.html";
+      return;
+    }
+    if (!response.ok) throw new Error('Network error');
+    return response.json();
+  })
+  .then(users => {
+    if (!users) return; // No data or redirected
 
-      // Save in localStorage for future reloads
-      localStorage.setItem("students", JSON.stringify(data));
+    users.forEach(user => {
+      // Create a heading for each user
+      const userHeader = document.createElement("h3");
+      userHeader.textContent = `User: ${window.DataHandler.capitalize(user.username)}`;
+      container.appendChild(userHeader);
 
-      renderStudents(data);
-    })
-    .catch(error => {
-      console.error('Fetch error:', error);
-    });
-  }
+      // A row to hold this user’s students
+      const row = document.createElement("div");
+      row.className = "row g-4";
+      container.appendChild(row);
 
-  // 🔹 render students function
-  function renderStudents(data) {
-    data.forEach(student => {
-      const studentName = window.DataHandler.capitalize(student.student);
-      const studentClass = window.DataHandler.capitalize(student.class);
-      const studentSection = window.DataHandler.capitalize(student.sectionclass);
+      // Render each student
+      user.students.forEach(student => {
+        const studentName = window.DataHandler.capitalize(student.student);
+        const studentClass = window.DataHandler.capitalize(student.class);
+        const studentSection = window.DataHandler.capitalize(student.sectionclass);
 
-      const div = document.createElement("div");
-      div.className = `col-lg-4 col-md-6 portfolio-item isotope-item filter-${student.class}`;
-      div.innerHTML = `
-        <div class="portfolio-content h-100">
-          <img src="${student.imgstudent}" class="img-fluid" alt="${studentName}">
-          <div class="portfolio-info">
-            <h4>${studentName}</h4>
-            <p>Class: ${studentClass}, Section: ${studentSection}</p>
-            <div>
-              <a href="${student.imgstudent}" title="${studentName}" data-gallery="portfolio-gallery-${studentClass}" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-              <a href="student-details.html?studentid=${student.studentid}" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
+        const div = document.createElement("div");
+        div.className = `col-lg-4 col-md-6 portfolio-item isotope-item filter-${student.class}`;
+        div.innerHTML = `
+          <div class="portfolio-content h-100">
+            <img src="${student.imgstudent}" class="img-fluid" alt="${studentName}">
+            <div class="portfolio-info">
+              <h4>${studentName}</h4>
+              <p>Class: ${studentClass}, Section: ${studentSection}</p>
+              <div>
+                <a href="${student.imgstudent}" title="${studentName}" data-gallery="portfolio-gallery-${studentClass}" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
+                <a href="student-details.html?studentid=${student.studentid}" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
+              </div>
             </div>
           </div>
-        </div>
-      `;
-      container.appendChild(div);
+        `;
+        row.appendChild(div);
+      });
     });
 
     initIsotopeLayout();
     GLightbox({ selector: '.glightbox' });
-  }
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+  });
 
-  // 🔹 isotope init
   function initIsotopeLayout() {
     const isoParent = container.closest('.isotope-layout');
     const isoInstance = new Isotope(container, {
