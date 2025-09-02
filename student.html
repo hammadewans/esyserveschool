@@ -130,15 +130,19 @@
                 onmouseover="this.style.backgroundColor='#0056b3'" 
                 onmouseout="this.style.backgroundColor='#007bff'"
                 onclick="
-                  confirm('⚠️ This may take more data and time.\nFor best experience, sync it after completing all operations.');
-                  let dbName = 'EsyServeDB';
-                  let request = indexedDB.deleteDatabase(dbName);
-                  request.onsuccess = () => { alert('✅ Done'); window.location.reload(); };
-                  request.onerror = () => { alert('❌ Error while Sync.'); };
-                  request.onblocked = () => { alert('⚠️ Delete blocked. Close other tabs.');};
+                  if (confirm('⚠️ This may take more data and time.\nFor best experience, sync it after completing all operations.')) {
+                    let dbName = 'EsyServeDB';
+                    let request = indexedDB.deleteDatabase(dbName);
+                    request.onsuccess = () => { alert('✅ Done'); window.location.reload(); };
+                    request.onerror = () => { alert('❌ Error while Sync.'); };
+                    request.onblocked = () => { alert('⚠️ Delete blocked. Close other tabs.'); };
+                  } else {
+                    alert('❌ Cancelled');
+                  }
                 ">
                 Reload Changes
               </button>
+
           </div>
 
           <div class="row gy-4 isotope-container" id="portfolio-container" data-aos="fade-up" data-aos-delay="200" style="position: relative; height: 1344px;">
@@ -196,6 +200,7 @@
 
 
 </html>
+
 
 
 
