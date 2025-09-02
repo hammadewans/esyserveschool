@@ -1,54 +1,101 @@
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("portfolio-container");
+  const DB_NAME = "EsyServeDB";
+  const STORE_NAME = "students";
+  let db;
 
-  // 🔹 Assume you already have current user ID or email from login/session
-  // Replace this with your actual user identifier
-  const currentUserId = localStorage.getItem("currentUserId");  
+  // --- Open IndexedDB ---
+  const request = indexedDB.open(DB_NAME, 1);
 
-  // Storage key for this user
-  const storageKey = `students_${currentUserId}`;
+  request.onupgradeneeded = (e) => {
+    db = e.target.result;
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+      db.createObjectStore(STORE_NAME, { keyPath: "studentid" });
+    }
+  };
 
-  // Check if cached data exists
-  const cached = localStorage.getItem(storageKey);
-  if (cached) {
-    const data = JSON.parse(cached);
-    renderStudents(data);
-  } else {
-    // Fetch from backend if not cached
+  request.onsuccess = (e) => {
+    db = e.target.result;
+
+    // Try loading from DB first
+    loadFromIndexedDB().then(students => {
+      if (students.length > 0) {
+        console.log("Loaded from IndexedDB:", students.length);
+        renderStudents(students);
+      } else {
+        console.log("No cached data, fetching from backend...");
+        fetchFromBackend();
+      }
+    });
+  };
+
+  request.onerror = (e) => {
+    console.error("IndexedDB error:", e.target.error);
+    // fallback → fetch from backend
+    fetchFromBackend();
+  };
+
+  // --- Fetch from backend ---
+  function fetchFromBackend() {
     fetch('https://esyserve.top/fetch/student', {
       method: 'GET',
       credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json' }
     })
-    .then(response => {
-      if (response.status === 204) {
-        console.warn('Data not Added Yet');
-        return;
-      }
-      if (response.status === 401) {
-        window.location.href = "login.html";
-        return;
-      }
-      if (!response.ok) throw new Error('Network error');
-      return response.json();
-    })
-    .then(data => {
-      if (!data) return; // Already redirected, no need to proceed
+      .then(response => {
+        if (response.status === 204) {
+          console.warn('Data not Added Yet');
+          return;
+        }
+        if (response.status === 401) {
+          window.location.href = "login.html";
+          return;
+        }
+        if (!response.ok) throw new Error('Network error');
+        return response.json();
+      })
+      .then(data => {
+        if (!data) return;
 
-      // Save to user-specific storage
-      localStorage.setItem(storageKey, JSON.stringify(data));
+        // Save to DB
+        saveToIndexedDB(data).then(() => {
+          console.log("Students saved to IndexedDB");
+        });
 
-      renderStudents(data);
-    })
-    .catch(error => {
-      console.error('Fetch error:', error);
+        // Render
+        renderStudents(data);
+      })
+      .catch(error => {
+        console.error('Fetch error:', error);
+      });
+  }
+
+  // --- Save students to IndexedDB ---
+  function saveToIndexedDB(students) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      students.forEach(student => store.put(student));
+      tx.oncomplete = () => resolve();
+      tx.onerror = (e) => reject(e.target.error);
     });
   }
 
-  // 🔹 Same rendering logic
+  // --- Load students from IndexedDB ---
+  function loadFromIndexedDB() {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = (e) => reject(e.target.error);
+    });
+  }
+
+  // --- Render students in UI ---
   function renderStudents(data) {
+    container.innerHTML = ""; // clear old
+
     data.forEach(student => {
       const studentName = window.DataHandler.capitalize(student.student);
       const studentClass = window.DataHandler.capitalize(student.class);
@@ -73,11 +120,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     initIsotopeLayout();
-    GLightbox({
-      selector: '.glightbox'
-    });
+    GLightbox({ selector: '.glightbox' });
   }
 
+  // --- Isotope layout ---
   function initIsotopeLayout() {
     const isoParent = container.closest('.isotope-layout');
     const isoInstance = new Isotope(container, {
@@ -95,9 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
       filterBtn.addEventListener('click', function () {
         isoParent.querySelector('.filter-active')?.classList.remove('filter-active');
         this.classList.add('filter-active');
-        isoInstance.arrange({
-          filter: this.getAttribute('data-filter')
-        });
+        isoInstance.arrange({ filter: this.getAttribute('data-filter') });
       });
     });
   }
