@@ -5,22 +5,90 @@ document.addEventListener('DOMContentLoaded', function () {
   const validator = new FormValidator(form);
   const imgInput = form.querySelector('input[name="imgstudent"]');
 
-  // === Set default preview image ===
-  preview.src = 'assets/img/3x4.png'; // Optional: change to your default 5:4 preview
+  const params = new URLSearchParams(window.location.search);
+  const studentId = params.get("studentid");
 
-  // === Image file input preview (5:4 crop) ===
+  if (!studentId) {
+    console.error("No studentid provided in URL");
+    return;
+  }
+
+  // =============================
+  // IndexedDB Setup
+  // =============================
+  const DB_NAME = "EsyServeDB";
+  const STORE_NAME = "studentImages";
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = function (e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: "studentId" });
+        }
+      };
+      request.onsuccess = e => resolve(e.target.result);
+      request.onerror = e => reject(e.target.error);
+    });
+  }
+
+  async function saveToIndexedDB(studentId, base64Image) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      store.put({ studentId, base64Image });
+      tx.oncomplete = () => resolve();
+      tx.onerror = e => reject(e.target.error);
+    });
+  }
+
+  async function loadFromIndexedDB(studentId) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.get(studentId);
+      request.onsuccess = () => resolve(request.result?.base64Image || null);
+      request.onerror = e => reject(e.target.error);
+    });
+  }
+
+  // =============================
+  // Load Cached Image
+  // =============================
+  (async function () {
+    try {
+      const cachedImg = await loadFromIndexedDB(studentId);
+      preview.src = cachedImg || "assets/img/3x4.png";
+    } catch (err) {
+      console.error("Failed to load cached image", err);
+      preview.src = "assets/img/3x4.png";
+    }
+  })();
+
+  // =============================
+  // File Input + Crop Preview
+  // =============================
   imgInput.addEventListener('change', function () {
     const file = imgInput.files[0];
     if (!file || !file.type.startsWith('image/')) return;
 
+    if (file.size > 2 * 1024 * 1024) { // 2MB limit
+      window.AlertHandler.show("Image too large. Max 2MB allowed.", "error");
+      imgInput.value = "";
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = function (e) {
       const img = new Image();
-      img.onload = function () {
+      img.onload = async function () {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-       const targetWidth = 600; // 3:4 ratio (600x800)
-        const targetHeight = 800;
+        const targetWidth = 600;
+        const targetHeight = 800; // 3:4 ratio
         canvas.width = targetWidth;
         canvas.height = targetHeight;
 
@@ -29,13 +97,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let sx, sy, sw, sh;
         if (srcAspect > targetAspect) {
-          // source is wider than target
           sw = img.height * targetAspect;
           sh = img.height;
           sx = (img.width - sw) / 2;
           sy = 0;
         } else {
-          // source is taller than target
           sw = img.width;
           sh = img.width / targetAspect;
           sx = 0;
@@ -43,24 +109,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
-        preview.src = canvas.toDataURL('image/png');
+        const base64 = canvas.toDataURL('image/png');
+        preview.src = base64;
+
+        // Save cropped preview in IndexedDB
+        await saveToIndexedDB(studentId, base64);
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   });
 
-  // === Form submission ===
+  // =============================
+  // Form Submission
+  // =============================
   button.addEventListener('click', function () {
-    const params = new URLSearchParams(window.location.search);
-    const studentId = params.get("studentid");
-
-    if (!studentId) {
-    console.error("No studentid provided in URL");
-    return;
-    }
-
-
     window.ButtonController.disable(button);
 
     const error = validator.validate();
@@ -71,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     window.DataHandler.trimForm(form);
-
     const formData = new FormData(form);
 
     (async function () {
@@ -82,19 +144,24 @@ document.addEventListener('DOMContentLoaded', function () {
           body: formData
         });
 
-        const result = await response.json();
-
-        if (!response.ok) {
-          if (response.status < 500) {
-            throw new Error(result || 'Invalid input provided.');
-          }
-          console.error(result);
-          throw new Error('Something went wrong. Please try again later.');
+        let result = "";
+        try {
+          result = await response.json();
+        } catch (_) {
+          result = await response.text();
         }
 
-        // Success
+        if (!response.ok) {
+          throw new Error(result || "Something went wrong. Please try again.");
+        }
+
+        // Success → keep cached image updated
         window.AlertHandler.show(result, 'success');
+        await saveToIndexedDB(studentId, preview.src);
+
         form.reset();
+        preview.src = "assets/img/3x4.png";
+
         setTimeout(() => {
           window.location.href = `student-details.html?studentid=${studentId}`;
         }, 2000);
