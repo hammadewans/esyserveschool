@@ -1,115 +1,98 @@
-// === IndexedDB helper ===
-const DB_NAME = "EsyServeDB";
-const DB_VERSION = 1;
-const STORE_NAME = "students";
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('studentForm');
+  const button = document.getElementById('studentButton');
+  const preview = document.getElementById('imgstudentPreview');
+  const validator = new FormValidator(form);
+  const imgInput = form.querySelector('input[name="imgstudent"]');
 
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: "studentid" });
-      }
+  // === Set default preview image ===
+  preview.src = 'assets/img/3x4.png'; // Optional: use 3:4 placeholder
+
+  // === Image file input preview (3:4 crop) ===
+  imgInput.addEventListener('change', function () {
+    const file = imgInput.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const targetWidth = 600; // 3:4 ratio (600x800)
+        const targetHeight = 800;
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+
+        const srcAspect = img.width / img.height;
+        const targetAspect = targetWidth / targetHeight;
+
+        let sx, sy, sw, sh;
+        if (srcAspect > targetAspect) {
+          // source is wider than target
+          sw = img.height * targetAspect;
+          sh = img.height;
+          sx = (img.width - sw) / 2;
+          sy = 0;
+        } else {
+          // source is taller than target
+          sw = img.width;
+          sh = img.width / targetAspect;
+          sx = 0;
+          sy = (img.height - sh) / 2;
+        }
+
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
+        preview.src = canvas.toDataURL('image/png');
+      };
+      img.src = e.target.result;
     };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    reader.readAsDataURL(file);
   });
-}
 
-async function getStudentFromDB(id) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readonly");
-    const store = tx.objectStore(STORE_NAME);
-    const req = store.get(id);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
+  // === Form submission ===
+  button.addEventListener('click', function () {
+    window.ButtonController.disable(button);
 
-async function saveStudentToDB(student) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    tx.objectStore(STORE_NAME).put(student);
-    tx.oncomplete = () => resolve(true);
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-// === 1. Fetch and load user profile by studentid ===
-(async function () {
-  const params = new URLSearchParams(window.location.search);
-  const studentId = params.get("studentid");
-
-  if (!studentId) {
-    console.error("No studentid provided in URL");
-    return;
-  }
-
-  // First: load from IndexedDB for offline/fast preview
-  try {
-    const localData = await getStudentFromDB(studentId);
-    if (localData) {
-      window.userProfile = localData;
-      document.dispatchEvent(new CustomEvent("profileDataReady", { detail: { source: "indexeddb" } }));
+    const error = validator.validate();
+    if (error) {
+      window.AlertHandler.show(window.DataHandler.capitalize(error), 'error');
+      window.ButtonController.enable(button);
+      return;
     }
-  } catch (err) {
-    console.warn("IndexedDB error:", err);
-  }
 
-  // Then: fetch fresh data from backend
-  fetch(`https://esyserve.top/search/student/${encodeURIComponent(studentId)}`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      if (response.status === 401) {
-        window.location.href = "/login.html";
-        return;
-      }
-      if (response.status === 204) throw new Error("Invalid Student Id");
-      if (!response.ok) throw new Error("Unexpected status: " + response.status);
-      return response.json();
-    })
-    .then(async (data) => {
-      if (!data) return;
+    window.DataHandler.trimForm(form);
 
-      window.userProfile = data;
-      document.dispatchEvent(new CustomEvent("profileDataReady", { detail: { source: "backend" } }));
+    const formData = new FormData(form);
 
-      // Save latest to IndexedDB
+    (async function () {
       try {
-        await saveStudentToDB(data);
-      } catch (err) {
-        console.error("Failed to save to IndexedDB:", err);
+        const response = await fetch('https://esyserve.top/add/student', {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          if (response.status < 500) {
+            throw new Error(result || 'Invalid input provided.');
+          }
+          console.error(result);
+          throw new Error('Something went wrong. Please try again later.');
+        }
+
+        // Success
+        window.AlertHandler.show(result, 'success');
+        form.reset();
+        preview.src = 'assets/img/3x4.png'; // Reset preview
+      } catch (error) {
+        window.AlertHandler.show(error.message, 'error');
+      } finally {
+        window.ButtonController.enable(button);
       }
-    })
-    .catch((error) => {
-      console.error("Fetch error:", error);
-    });
-})();
-
-// === 2. Fill allowed input fields only ===
-document.addEventListener("profileDataReady", function () {
-  const data = window.userProfile;
-  if (!data) return;
-
-  const allowedInputIds = [
-    "student", "father", "mother", "class", "sectionclass",
-    "rollno", "dob", "address", "contact", "role"
-  ];
-
-  Object.entries(data).forEach(function ([key, value]) {
-    if (!allowedInputIds.includes(key)) return;
-
-    const el = document.getElementById(key);
-    if (!el || !["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName)) return;
-
-    el.value = value;
+    })();
   });
 });
+now this is connect with indexdb also backend success add into indexdb
