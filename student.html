@@ -124,15 +124,25 @@
               </ul><!-- End Portfolio Filters -->
             </div>
           </div>
-              <button onclick="
-              let dbName = 'esyserve_db';
-              let request = indexedDB.deleteDatabase(dbName);
-              request.onsuccess = () => location.reload();
-              request.onerror = () => location.reload();
-              request.onblocked = () => location.reload();
-            ">
-              Reload Changes
-            </button>
+<button 
+  style="background-color:#007bff; color:white; border:none; padding:10px 20px; 
+         border-radius:6px; cursor:pointer; font-size:16px; font-weight:500;
+         box-shadow:0 2px 6px rgba(0,0,0,0.2);"
+  onmouseover="this.style.backgroundColor='#0056b3'" 
+  onmouseout="this.style.backgroundColor='#007bff'"
+  onclick="
+    alert('⚠️ This may take more data and time.\nFor best experience, sync it after completing all operations.');
+    let dbName = 'EsyServeDB';
+    let request = indexedDB.deleteDatabase(dbName);
+    request.onsuccess = () => { alert('✅ Done'); location.reload(); };
+    request.onerror = () => { alert('❌ Error while deleting.'); };
+    request.onblocked = () => { alert('⚠️ Delete blocked. Close other tabs.');};
+  ">
+  Reload Changes
+</button>
+
+
+
           <div class="row gy-4 isotope-container" id="portfolio-container" data-aos="fade-up" data-aos-delay="200" style="position: relative; height: 1344px;">
 
           </div><!-- End Portfolio Container -->
@@ -188,4 +198,5 @@
 
 
 </html>
+
 
