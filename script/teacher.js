@@ -157,10 +157,13 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
       container.appendChild(div);
 
-      if (isoInstance) {
-        isoInstance.appended(div);
-        isoInstance.layout(); // 🔄 realign to 3 columns
-      }
+        if (isoInstance) {
+          isoInstance.appended(div);
+          imagesLoaded(div, () => {
+            isoInstance.layout();
+          });
+        }
+
     });
 
     GLightbox({ selector: '.glightbox' });
@@ -174,3 +177,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
+
