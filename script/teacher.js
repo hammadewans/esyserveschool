@@ -1,28 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("portfolio-container");
   const DB_NAME = "EsyServeDB";
-  const DB_VERSION = 2; // Increment version when adding new stores
+  const DB_VERSION = 2; // Latest DB version
   const STORE_NAME = "teachers";
   let db;
 
-  // --- Pagination state ---
   const PAGE_SIZE = 18;
   let teachersCache = [];
   let currentIndex = 0;
   let observer;
 
-  // --- Open IndexedDB ---
   const request = indexedDB.open(DB_NAME, DB_VERSION);
 
   request.onupgradeneeded = (e) => {
     db = e.target.result;
 
-    // Create teachers store if it doesn't exist
     if (!db.objectStoreNames.contains(STORE_NAME)) {
       db.createObjectStore(STORE_NAME, { keyPath: "teacherid" });
     }
 
-    // Ensure students store stays intact if already exists
     if (!db.objectStoreNames.contains("students")) {
       db.createObjectStore("students", { keyPath: "studentid" });
     }
@@ -51,7 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchFromBackend();
   };
 
-  // --- Fetch from backend ---
   function fetchFromBackend() {
     fetch('https://esyserve.top/fetch/teacher', {
       method: 'GET',
@@ -59,14 +54,8 @@ document.addEventListener("DOMContentLoaded", function () {
       headers: { 'Content-Type': 'application/json' }
     })
       .then(response => {
-        if (response.status === 204) {
-          console.warn('No teacher data added yet');
-          return null;
-        }
-        if (response.status === 401) {
-          window.location.href = "login.html";
-          return null;
-        }
+        if (response.status === 204) return null;
+        if (response.status === 401) { window.location.href = "login.html"; return null; }
         if (!response.ok) throw new Error('Network error');
         return response.json();
       })
@@ -74,33 +63,25 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!data) return;
 
         teachersCache = data;
-
-        saveToIndexedDB(data).then(() => {
-          console.log("Teachers saved to IndexedDB");
-        });
-
+        saveToIndexedDB(data).then(() => console.log("Teachers saved to IndexedDB"));
         initRender();
       })
       .catch(error => console.error('Fetch error:', error));
   }
 
-  // --- Save to IndexedDB ---
   function saveToIndexedDB(teachers) {
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, "readwrite");
       const store = tx.objectStore(STORE_NAME);
-      teachers.forEach(teacher => store.put(teacher));
+      teachers.forEach(t => store.put(t));
       tx.oncomplete = () => resolve();
       tx.onerror = (e) => reject(e.target.error);
     });
   }
 
-  // --- Load from IndexedDB ---
   function loadFromIndexedDB() {
     return new Promise((resolve, reject) => {
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        return resolve([]); // Store not created yet
-      }
+      if (!db.objectStoreNames.contains(STORE_NAME)) return resolve([]);
       const tx = db.transaction(STORE_NAME, "readonly");
       const store = tx.objectStore(STORE_NAME);
       const req = store.getAll();
@@ -109,13 +90,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- Initialize lazy rendering ---
   function initRender() {
     container.innerHTML = "";
     currentIndex = 0;
     renderNextBatch();
 
-    // Sentinel for IntersectionObserver
     let sentinel = document.getElementById("sentinel");
     if (!sentinel) {
       sentinel = document.createElement("div");
@@ -125,13 +104,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (observer) observer.disconnect();
-    observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) renderNextBatch();
-    }, { threshold: 1.0 });
+    observer = new IntersectionObserver(entries => { if (entries[0].isIntersecting) renderNextBatch(); }, { threshold: 1.0 });
     observer.observe(sentinel);
   }
 
-  // --- Render next batch of teachers ---
   function renderNextBatch() {
     const nextBatch = teachersCache.slice(currentIndex, currentIndex + PAGE_SIZE);
 
@@ -148,12 +124,8 @@ document.addEventListener("DOMContentLoaded", function () {
             <h4>${teacherName}</h4>
             <p>Role: ${teacherRole}</p>
             <div>
-              <a href="${teacher.imgteacher}" title="${teacherName}" data-gallery="portfolio-gallery-${teacherRole}" class="glightbox preview-link">
-                <i class="bi bi-zoom-in"></i>
-              </a>
-              <a href="teacher-details.html?teacherid=${teacher.teacherid}" title="More Details" class="details-link">
-                <i class="bi bi-link-45deg"></i>
-              </a>
+              <a href="${teacher.imgteacher}" title="${teacherName}" data-gallery="portfolio-gallery-${teacherRole}" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
+              <a href="teacher-details.html?teacherid=${teacher.teacherid}" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
             </div>
           </div>
         </div>
@@ -165,13 +137,9 @@ document.addEventListener("DOMContentLoaded", function () {
     GLightbox({ selector: '.glightbox' });
 
     currentIndex += PAGE_SIZE;
-
-    if (currentIndex >= teachersCache.length && observer) {
-      observer.disconnect();
-    }
+    if (currentIndex >= teachersCache.length && observer) observer.disconnect();
   }
 
-  // --- Isotope layout ---
   function initIsotopeLayout() {
     const isoParent = container.closest('.isotope-layout');
     const isoInstance = new Isotope(container, {
@@ -181,9 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
       sortBy: isoParent.getAttribute('data-sort') ?? 'original-order'
     });
 
-    imagesLoaded(container, function () {
-      isoInstance.layout();
-    });
+    imagesLoaded(container, () => isoInstance.layout());
 
     isoParent.querySelectorAll('.isotope-filters li').forEach(filterBtn => {
       filterBtn.addEventListener('click', function () {
