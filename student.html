@@ -135,9 +135,9 @@
       const request = indexedDB.open(DB_NAME);
       request.onsuccess = (e) => {
         const db = e.target.result;
-        const newVersion = db.version + 1; // increment version to allow modification
+        const newVersion = db.version + 1;
         db.close();
-        
+
         const upgradeRequest = indexedDB.open(DB_NAME, newVersion);
         upgradeRequest.onupgradeneeded = (ev) => {
           const upgradedDB = ev.target.result;
@@ -149,9 +149,7 @@
           alert('✅ Student cache deleted.');
           window.location.reload();
         };
-        upgradeRequest.onerror = () => {
-          alert('❌ Error while deleting student cache.');
-        };
+        upgradeRequest.onerror = () => { alert('❌ Error while deleting student cache.'); };
       };
       request.onerror = () => { alert('❌ Could not open database.'); };
     } else {
@@ -219,6 +217,7 @@
 
 
 </html>
+
 
 
 
