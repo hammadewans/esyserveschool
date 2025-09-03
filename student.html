@@ -123,25 +123,35 @@
                 <li data-filter=".filter-12">12<sup>th</sup> </li>
               </ul><!-- End Portfolio Filters -->
             </div>
-<button 
-  style="background-color:#007bff; color:white; border:none; padding:10px 20px;
-         border-radius:6px; cursor:pointer; font-size:16px; font-weight:500;
-         box-shadow:0 2px 6px rgba(0,0,0,0.2);"
-  onmouseover="this.style.backgroundColor='#0056b3'" 
-  onmouseout="this.style.backgroundColor='#007bff'"
-  onclick="
-    if (confirm('⚠️ This may take some time and data. For best experience sync it once after many changes.')) {
-      const DB_NAME = 'EsyServeStudentDB';
-      const delRequest = indexedDB.deleteDatabase(DB_NAME);
-      delRequest.onsuccess = () => { alert('✅ Student data synced'); window.location.reload(); };
-      delRequest.onerror = () => alert('❌ Could not sync student data');
-      delRequest.onblocked = () => alert('⚠️ Sync blocked. Close other tabs.');
-    } else {
-      alert('❌ Cancelled');
-    }
-  ">
+<button id="sync-students" style="background-color:#007bff; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-size:16px; font-weight:500; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
   Sync Student Changes
 </button>
+
+<script>
+  const btn = document.getElementById('sync-students');
+
+  btn.addEventListener('mouseover', () => btn.style.backgroundColor = '#0056b3');
+  btn.addEventListener('mouseout', () => btn.style.backgroundColor = '#007bff');
+
+  btn.addEventListener('click', () => {
+    if (!confirm('⚠️ This may take some time and data. For best experience sync it once after many changes.')) {
+      alert('❌ Cancelled');
+      return;
+    }
+
+    const DB_NAME = 'EsyServeStudentDB';
+    const delRequest = indexedDB.deleteDatabase(DB_NAME);
+
+    delRequest.onsuccess = () => {
+      alert('✅ Student data synced');
+      window.location.reload();
+    };
+
+    delRequest.onerror = () => alert('❌ Could not sync student data');
+    delRequest.onblocked = () => alert('⚠️ Sync blocked. Close other tabs.');
+  });
+</script>
+
         </div>
 
           <div class="row gy-4 isotope-container" id="portfolio-container" data-aos="fade-up" data-aos-delay="200" style="position: relative; height: 1344px;">
@@ -199,6 +209,7 @@
 
 
 </html>
+
 
 
 
