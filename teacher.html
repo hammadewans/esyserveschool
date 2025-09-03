@@ -112,25 +112,35 @@
                 <li data-filter=".filter-teacher">Teacher</li>
               </ul><!-- End Portfolio Filters -->
             </div>
-<button 
-  style="background-color:#28a745; color:white; border:none; padding:10px 20px;
-         border-radius:6px; cursor:pointer; font-size:16px; font-weight:500;
-         box-shadow:0 2px 6px rgba(0,0,0,0.2);"
-  onmouseover="this.style.backgroundColor='#218838'" 
-  onmouseout="this.style.backgroundColor='#28a745'"
-  onclick="
-    if (confirm('⚠️ This may take some time and data. For best experience sync it once after many changes.)) {
-      const DB_NAME = 'EsyServeTeacherDB';
-      const delRequest = indexedDB.deleteDatabase(DB_NAME);
-      delRequest.onsuccess = () => { alert('✅ Teacher data synced'); window.location.reload(); };
-      delRequest.onerror = () => alert('❌ Could not sync teacher data');
-      delRequest.onblocked = () => alert('⚠️ Sync blocked. Close other tabs.');
-    } else {
-      alert('❌ Cancelled');
-    }
-  ">
+<button id="sync-teachers" style="background-color:#28a745; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-size:16px; font-weight:500; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
   Sync Teacher Changes
 </button>
+
+<script>
+  const teacherBtn = document.getElementById('sync-teachers');
+
+  teacherBtn.addEventListener('mouseover', () => teacherBtn.style.backgroundColor = '#218838');
+  teacherBtn.addEventListener('mouseout', () => teacherBtn.style.backgroundColor = '#28a745');
+
+  teacherBtn.addEventListener('click', () => {
+    if (!confirm('⚠️ This may take some time and data. For best experience sync it once after many changes.')) {
+      alert('❌ Cancelled');
+      return;
+    }
+
+    const DB_NAME = 'EsyServeTeacherDB';
+    const delRequest = indexedDB.deleteDatabase(DB_NAME);
+
+    delRequest.onsuccess = () => {
+      alert('✅ Teacher data synced');
+      window.location.reload();
+    };
+
+    delRequest.onerror = () => alert('❌ Could not sync teacher data');
+    delRequest.onblocked = () => alert('⚠️ Sync blocked. Close other tabs.');
+  });
+</script>
+
 
           </div>
 
@@ -189,6 +199,7 @@
 
 
 </html>
+
 
 
 
