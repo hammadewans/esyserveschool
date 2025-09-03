@@ -4,6 +4,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const STORE_NAME = "students";
   let db;
 
+  // --- Pagination state ---
+  const PAGE_SIZE = 18;
+  let studentsCache = [];  // store all fetched students
+  let currentIndex = 0;    // current position
+  let observer;            // IntersectionObserver for lazy load
+
   // --- Open IndexedDB ---
   const request = indexedDB.open(DB_NAME, 1);
 
@@ -21,7 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
     loadFromIndexedDB().then(students => {
       if (students.length > 0) {
         console.log("Loaded from IndexedDB:", students.length);
-        renderStudents(students);
+        studentsCache = students;
+        initRender();
       } else {
         console.log("No cached data, fetching from backend...");
         fetchFromBackend();
@@ -57,13 +64,14 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(data => {
         if (!data) return;
 
+        studentsCache = data;
+
         // Save to DB
         saveToIndexedDB(data).then(() => {
           console.log("Students saved to IndexedDB");
         });
 
-        // Render
-        renderStudents(data);
+        initRender();
       })
       .catch(error => {
         console.error('Fetch error:', error);
@@ -87,16 +95,37 @@ document.addEventListener("DOMContentLoaded", function () {
       const tx = db.transaction(STORE_NAME, "readonly");
       const store = tx.objectStore(STORE_NAME);
       const req = store.getAll();
-      req.onsuccess = () => resolve(req.result);
+    req.onsuccess = () => resolve(req.result);
       req.onerror = (e) => reject(e.target.error);
     });
   }
 
-  // --- Render students in UI ---
-  function renderStudents(data) {
+  // --- Initialize lazy rendering ---
+  function initRender() {
     container.innerHTML = ""; // clear old
+    currentIndex = 0;
+    renderNextBatch();
 
-    data.forEach(student => {
+    // Add sentinel div for infinite scroll
+    const sentinel = document.createElement("div");
+    sentinel.id = "sentinel";
+    sentinel.style.height = "50px";
+    container.after(sentinel);
+
+    observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        renderNextBatch();
+      }
+    }, { threshold: 1.0 });
+
+    observer.observe(sentinel);
+  }
+
+  // --- Render next batch of students ---
+  function renderNextBatch() {
+    const nextBatch = studentsCache.slice(currentIndex, currentIndex + PAGE_SIZE);
+
+    nextBatch.forEach(student => {
       const studentName = window.DataHandler.capitalize(student.student);
       const studentClass = window.DataHandler.capitalize(student.class);
       const studentSection = window.DataHandler.capitalize(student.sectionclass);
@@ -121,6 +150,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     initIsotopeLayout();
     GLightbox({ selector: '.glightbox' });
+
+    currentIndex += PAGE_SIZE;
+
+    if (currentIndex >= studentsCache.length && observer) {
+      observer.disconnect(); // no more students
+    }
   }
 
   // --- Isotope layout ---
