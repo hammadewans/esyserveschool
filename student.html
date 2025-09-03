@@ -123,25 +123,44 @@
                 <li data-filter=".filter-12">12<sup>th</sup> </li>
               </ul><!-- End Portfolio Filters -->
             </div>
-              <button 
-                style="background-color:#007bff; color:white; border:none; padding:10px 20px;
-                       border-radius:6px; cursor:pointer; font-size:16px; font-weight:500;
-                       box-shadow:0 2px 6px rgba(0,0,0,0.2);"
-                onmouseover="this.style.backgroundColor='#0056b3'" 
-                onmouseout="this.style.backgroundColor='#007bff'"
-                onclick="
-                  if (confirm('⚠️ This may take more data and time.\nFor best experience, sync it after completing all operations.')) {
-                    let dbName = 'EsyServeDB';
-                    let request = indexedDB.deleteDatabase(dbName);
-                    request.onsuccess = () => { alert('✅ Done'); window.location.reload(); };
-                    request.onerror = () => { alert('❌ Error while Sync.'); };
-                    request.onblocked = () => { alert('⚠️ Delete blocked. Close other tabs.'); };
-                  } else {
-                    alert('❌ Cancelled');
-                  }
-                ">
-                Reload Changes
-              </button>
+<button 
+  style="background-color:#007bff; color:white; border:none; padding:10px 20px;
+         border-radius:6px; cursor:pointer; font-size:16px; font-weight:500;
+         box-shadow:0 2px 6px rgba(0,0,0,0.2);"
+  onmouseover="this.style.backgroundColor='#0056b3'" 
+  onmouseout="this.style.backgroundColor='#007bff'"
+  onclick="
+    if (confirm('⚠️ This will delete only the student cache.\nOther data remains intact.')) {
+      const DB_NAME = 'EsyServeDB';
+      const request = indexedDB.open(DB_NAME);
+      request.onsuccess = (e) => {
+        const db = e.target.result;
+        const newVersion = db.version + 1; // increment version to allow modification
+        db.close();
+        
+        const upgradeRequest = indexedDB.open(DB_NAME, newVersion);
+        upgradeRequest.onupgradeneeded = (ev) => {
+          const upgradedDB = ev.target.result;
+          if (upgradedDB.objectStoreNames.contains('students')) {
+            upgradedDB.deleteObjectStore('students');
+          }
+        };
+        upgradeRequest.onsuccess = () => {
+          alert('✅ Student cache deleted.');
+          window.location.reload();
+        };
+        upgradeRequest.onerror = () => {
+          alert('❌ Error while deleting student cache.');
+        };
+      };
+      request.onerror = () => { alert('❌ Could not open database.'); };
+    } else {
+      alert('❌ Cancelled');
+    }
+  ">
+  Clear Student Cache
+</button>
+
 
           </div>
 
@@ -200,6 +219,7 @@
 
 
 </html>
+
 
 
 
