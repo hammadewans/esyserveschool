@@ -140,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const teacherRole = window.DataHandler.capitalize(teacher.role);
 
       const div = document.createElement("div");
+      // ✅ Force Bootstrap grid: 3 per row on desktop, 2 on tablet, 1 on mobile
       div.className = `col-lg-4 col-md-6 portfolio-item isotope-item filter-${teacherRole.toLowerCase()}`;
       div.innerHTML = `
         <div class="portfolio-content h-100">
@@ -156,7 +157,10 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
       container.appendChild(div);
 
-      if (isoInstance) isoInstance.appended(div);
+      if (isoInstance) {
+        isoInstance.appended(div);
+        isoInstance.layout(); // 🔄 realign to 3 columns
+      }
     });
 
     GLightbox({ selector: '.glightbox' });
