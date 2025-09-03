@@ -38,7 +38,6 @@ templates
           <div class="mt-auto text-end">
             <span class="badge bg-secondary">${t.type}</span>
             <span class="badge bg-info">#${t.templateid}</span>
-            <button class="btn btn-sm btn-outline-danger" deleteTemplate="${t.templateid}">Delete</button>
           </div>
         </div>
       </div>
@@ -50,4 +49,5 @@ templates
   } catch (error) {
     console.log(error);
   }
+
 }
