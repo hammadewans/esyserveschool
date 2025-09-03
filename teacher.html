@@ -119,33 +119,17 @@
   onmouseover="this.style.backgroundColor='#218838'" 
   onmouseout="this.style.backgroundColor='#28a745'"
   onclick="
-    if (confirm('⚠️ This will delete only the teacher cache.\nOther data remains intact.')) {
-      const DB_NAME = 'EsyServeDB';
-      const request = indexedDB.open(DB_NAME);
-      request.onsuccess = (e) => {
-        const db = e.target.result;
-        const newVersion = db.version + 1;
-        db.close();
-
-        const upgradeRequest = indexedDB.open(DB_NAME, newVersion);
-        upgradeRequest.onupgradeneeded = (ev) => {
-          const upgradedDB = ev.target.result;
-          if (upgradedDB.objectStoreNames.contains('teachers')) {
-            upgradedDB.deleteObjectStore('teachers');
-          }
-        };
-        upgradeRequest.onsuccess = () => {
-          alert('✅ Teacher cache deleted.');
-          window.location.reload();
-        };
-        upgradeRequest.onerror = () => { alert('❌ Error while deleting teacher cache.'); };
-      };
-      request.onerror = () => { alert('❌ Could not open database.'); };
+    if (confirm('⚠️ This may take some time and data. For best experience sync it once after many changes.)) {
+      const DB_NAME = 'EsyServeTeacherDB';
+      const delRequest = indexedDB.deleteDatabase(DB_NAME);
+      delRequest.onsuccess = () => { alert('✅ Teacher data synced'); window.location.reload(); };
+      delRequest.onerror = () => alert('❌ Could not sync teacher data');
+      delRequest.onblocked = () => alert('⚠️ Sync blocked. Close other tabs.');
     } else {
       alert('❌ Cancelled');
     }
   ">
-  Clear Teacher Cache
+  Sync Teacher Changes
 </button>
 
           </div>
@@ -205,5 +189,6 @@
 
 
 </html>
+
 
 
