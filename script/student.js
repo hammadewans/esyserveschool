@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("portfolio-container");
   const DB_NAME = "EsyServeDB";
-  const DB_VERSION = 1; // Version 1 for students
+  const DB_VERSION = 2; // Use latest DB version
   const STORE_NAME = "students";
   let db;
 
@@ -20,6 +20,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create students store if it doesn't exist
     if (!db.objectStoreNames.contains(STORE_NAME)) {
       db.createObjectStore(STORE_NAME, { keyPath: "studentid" });
+    }
+
+    // Keep teachers store intact if exists
+    if (!db.objectStoreNames.contains("teachers")) {
+      db.createObjectStore("teachers", { keyPath: "teacherid" });
     }
   };
 
@@ -93,9 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // --- Load from IndexedDB ---
   function loadFromIndexedDB() {
     return new Promise((resolve, reject) => {
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        return resolve([]); // Store not created yet
-      }
+      if (!db.objectStoreNames.contains(STORE_NAME)) return resolve([]);
       const tx = db.transaction(STORE_NAME, "readonly");
       const store = tx.objectStore(STORE_NAME);
       const req = store.getAll();
@@ -110,7 +113,6 @@ document.addEventListener("DOMContentLoaded", function () {
     currentIndex = 0;
     renderNextBatch();
 
-    // Sentinel for IntersectionObserver
     let sentinel = document.getElementById("sentinel");
     if (!sentinel) {
       sentinel = document.createElement("div");
@@ -158,9 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     currentIndex += PAGE_SIZE;
 
-    if (currentIndex >= studentsCache.length && observer) {
-      observer.disconnect();
-    }
+    if (currentIndex >= studentsCache.length && observer) observer.disconnect();
   }
 
   // --- Isotope layout ---
@@ -173,9 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
       sortBy: isoParent.getAttribute('data-sort') ?? 'original-order'
     });
 
-    imagesLoaded(container, function () {
-      isoInstance.layout();
-    });
+    imagesLoaded(container, function () { isoInstance.layout(); });
 
     isoParent.querySelectorAll('.isotope-filters li').forEach(filterBtn => {
       filterBtn.addEventListener('click', function () {
