@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("portfolio-container");
   const DB_NAME = "EsyServeDB";
+  const DB_VERSION = 2; // Increment version when adding new stores
   const STORE_NAME = "teachers";
   let db;
 
@@ -11,17 +12,25 @@ document.addEventListener("DOMContentLoaded", function () {
   let observer;
 
   // --- Open IndexedDB ---
-  const request = indexedDB.open(DB_NAME, 1);
+  const request = indexedDB.open(DB_NAME, DB_VERSION);
 
   request.onupgradeneeded = (e) => {
     db = e.target.result;
+
+    // Create teachers store if it doesn't exist
     if (!db.objectStoreNames.contains(STORE_NAME)) {
       db.createObjectStore(STORE_NAME, { keyPath: "teacherid" });
+    }
+
+    // Ensure students store stays intact if already exists
+    if (!db.objectStoreNames.contains("students")) {
+      db.createObjectStore("students", { keyPath: "studentid" });
     }
   };
 
   request.onsuccess = (e) => {
     db = e.target.result;
+
     loadFromIndexedDB().then(teachers => {
       if (teachers.length > 0) {
         console.log("Loaded teachers from IndexedDB:", teachers.length);
@@ -31,6 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("No cached teacher data, fetching from backend...");
         fetchFromBackend();
       }
+    }).catch(err => {
+      console.error("Error loading from IndexedDB:", err);
+      fetchFromBackend();
     });
   };
 
@@ -86,6 +98,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // --- Load from IndexedDB ---
   function loadFromIndexedDB() {
     return new Promise((resolve, reject) => {
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        return resolve([]); // Store not created yet
+      }
       const tx = db.transaction(STORE_NAME, "readonly");
       const store = tx.objectStore(STORE_NAME);
       const req = store.getAll();
