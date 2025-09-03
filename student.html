@@ -130,37 +130,18 @@
   onmouseover="this.style.backgroundColor='#0056b3'" 
   onmouseout="this.style.backgroundColor='#007bff'"
   onclick="
-    if (confirm('⚠️ This will delete only the student cache.\nOther data remains intact.')) {
-      const DB_NAME = 'EsyServeDB';
-      const request = indexedDB.open(DB_NAME);
-      request.onsuccess = (e) => {
-        const db = e.target.result;
-        const newVersion = db.version + 1;
-        db.close();
-
-        const upgradeRequest = indexedDB.open(DB_NAME, newVersion);
-        upgradeRequest.onupgradeneeded = (ev) => {
-          const upgradedDB = ev.target.result;
-          if (upgradedDB.objectStoreNames.contains('students')) {
-            upgradedDB.deleteObjectStore('students');
-          }
-        };
-        upgradeRequest.onsuccess = () => {
-          alert('✅ Student cache deleted.');
-          window.location.reload();
-        };
-        upgradeRequest.onerror = () => { alert('❌ Error while deleting student cache.'); };
-      };
-      request.onerror = () => { alert('❌ Could not open database.'); };
+    if (confirm('⚠️ This may take some time and data. For best experience sync it once after many changes.')) {
+      const DB_NAME = 'EsyServeStudentDB';
+      const delRequest = indexedDB.deleteDatabase(DB_NAME);
+      delRequest.onsuccess = () => { alert('✅ Student data synced'); window.location.reload(); };
+      delRequest.onerror = () => alert('❌ Could not sync student data');
+      delRequest.onblocked = () => alert('⚠️ Sync blocked. Close other tabs.');
     } else {
       alert('❌ Cancelled');
     }
   ">
-  Clear Student Cache
-</button>
-
-
-          </div>
+  Sync Student Changes
+</button>div          </div>
 
           <div class="row gy-4 isotope-container" id="portfolio-container" data-aos="fade-up" data-aos-delay="200" style="position: relative; height: 1344px;">
 
@@ -217,6 +198,7 @@
 
 
 </html>
+
 
 
 
