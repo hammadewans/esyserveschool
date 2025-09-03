@@ -156,4 +156,33 @@ document.addEventListener("DOMContentLoaded", function () {
     initIsotopeLayout();
     GLightbox({ selector: '.glightbox' });
 
-    currentInde
+    currentIndex += PAGE_SIZE;
+
+    if (currentIndex >= studentsCache.length && observer) {
+      observer.disconnect();
+    }
+  }
+
+  // --- Isotope layout ---
+  function initIsotopeLayout() {
+    const isoParent = container.closest('.isotope-layout');
+    const isoInstance = new Isotope(container, {
+      itemSelector: '.isotope-item',
+      layoutMode: isoParent.getAttribute('data-layout') ?? 'masonry',
+      filter: isoParent.getAttribute('data-default-filter') ?? '*',
+      sortBy: isoParent.getAttribute('data-sort') ?? 'original-order'
+    });
+
+    imagesLoaded(container, function () {
+      isoInstance.layout();
+    });
+
+    isoParent.querySelectorAll('.isotope-filters li').forEach(filterBtn => {
+      filterBtn.addEventListener('click', function () {
+        isoParent.querySelector('.filter-active')?.classList.remove('filter-active');
+        this.classList.add('filter-active');
+        isoInstance.arrange({ filter: this.getAttribute('data-filter') });
+      });
+    });
+  }
+});
