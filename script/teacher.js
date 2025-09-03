@@ -26,30 +26,28 @@ document.addEventListener("DOMContentLoaded", function () {
   request.onsuccess = e => {
     db = e.target.result;
     console.log(`IndexedDB "${DB_NAME}" opened successfully.`);
-    loadFromIndexedDB()
-      .then(teachers => {
-        if (teachers.length > 0) {
-          console.log(`Loaded ${teachers.length} teachers from IndexedDB.`);
-          teachersCache = teachers;
-          initRender();
-        } else {
-          console.log("No teachers in IndexedDB, fetching from server...");
-          fetchFromBackend();
-        }
-      })
-      .catch(err => {
-        console.error("Error loading from IndexedDB:", err);
+    loadFromIndexedDB().then(teachers => {
+      if (teachers.length > 0) {
+        console.log(`Loaded ${teachers.length} teachers from IndexedDB.`);
+        teachersCache = teachers;
+        initRender();
+      } else {
+        console.log("No teachers in IndexedDB, fetching from server...");
         fetchFromBackend();
-      });
+      }
+    }).catch(err => {
+      console.error("Error loading from IndexedDB:", err);
+      fetchFromBackend();
+    });
   };
 
   request.onerror = e => {
-    console.error("IndexedDB error:", e.target.error);
+    console.error("Failed to open IndexedDB:", e.target.error);
     fetchFromBackend();
   };
 
   function fetchFromBackend() {
-    console.log("Fetching teachers from backend...");
+    console.log("Fetching teachers from backend server...");
     fetch('https://esyserve.top/fetch/teacher', { method: 'GET', credentials: 'include' })
       .then(res => {
         if (!res.ok) throw new Error(`Network error: ${res.status}`);
@@ -92,6 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
     container.innerHTML = "";
     currentIndex = 0;
 
+    // Sentinel for lazy loading
     let sentinel = document.getElementById("sentinel");
     if (!sentinel) {
       sentinel = document.createElement("div");
@@ -128,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
+    console.log("Rendering first batch of teachers...");
     renderNextBatch();
   }
 
