@@ -137,9 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderNextBatch() {
     const nextBatch = studentsCache.slice(currentIndex, currentIndex + PAGE_SIZE);
-    if (nextBatch.length === 0) return;
-
-    const newElements = [];
 
     nextBatch.forEach(student => {
       const studentName = window.DataHandler.capitalize(student.student);
@@ -147,6 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const studentSection = window.DataHandler.capitalize(student.sectionclass);
 
       const div = document.createElement("div");
+      // ✅ force Bootstrap 3-per-row grid
       div.className = `col-lg-4 col-md-6 portfolio-item isotope-item filter-${student.class}`;
       div.innerHTML = `
         <div class="portfolio-content h-100">
@@ -162,14 +160,14 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
       `;
       container.appendChild(div);
-      newElements.push(div);
+
+      if (isoInstance) {
+        isoInstance.appended(div);
+        isoInstance.layout(); // ✅ realign to 3 per row
+      }
     });
 
-    // Wait for images to load before updating Isotope layout
-    imagesLoaded(newElements, () => {
-      if (isoInstance) isoInstance.appended(newElements);
-      GLightbox({ selector: '.glightbox' });
-    });
+    GLightbox({ selector: '.glightbox' });
 
     currentIndex += PAGE_SIZE;
     console.log(`Rendered ${currentIndex} of ${studentsCache.length} students.`);
