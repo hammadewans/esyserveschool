@@ -137,6 +137,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderNextBatch() {
     const nextBatch = studentsCache.slice(currentIndex, currentIndex + PAGE_SIZE);
+    if (nextBatch.length === 0) return;
+
+    const newElements = [];
 
     nextBatch.forEach(student => {
       const studentName = window.DataHandler.capitalize(student.student);
@@ -159,11 +162,14 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
       `;
       container.appendChild(div);
-
-      if (isoInstance) isoInstance.appended(div);
+      newElements.push(div);
     });
 
-    GLightbox({ selector: '.glightbox' });
+    // Wait for images to load before updating Isotope layout
+    imagesLoaded(newElements, () => {
+      if (isoInstance) isoInstance.appended(newElements);
+      GLightbox({ selector: '.glightbox' });
+    });
 
     currentIndex += PAGE_SIZE;
     console.log(`Rendered ${currentIndex} of ${studentsCache.length} students.`);
