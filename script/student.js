@@ -1,20 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("portfolio-container");
   const DB_NAME = "EsyServeDB";
+  const DB_VERSION = 1; // Version 1 for students
   const STORE_NAME = "students";
   let db;
 
   // --- Pagination state ---
   const PAGE_SIZE = 18;
-  let studentsCache = [];  // store all fetched students
-  let currentIndex = 0;    // current position
-  let observer;            // IntersectionObserver for lazy load
+  let studentsCache = [];
+  let currentIndex = 0;
+  let observer;
 
   // --- Open IndexedDB ---
-  const request = indexedDB.open(DB_NAME, 1);
+  const request = indexedDB.open(DB_NAME, DB_VERSION);
 
   request.onupgradeneeded = (e) => {
     db = e.target.result;
+
+    // Create students store if it doesn't exist
     if (!db.objectStoreNames.contains(STORE_NAME)) {
       db.createObjectStore(STORE_NAME, { keyPath: "studentid" });
     }
@@ -23,22 +26,23 @@ document.addEventListener("DOMContentLoaded", function () {
   request.onsuccess = (e) => {
     db = e.target.result;
 
-    // Try loading from DB first
     loadFromIndexedDB().then(students => {
       if (students.length > 0) {
-        console.log("Loaded from IndexedDB:", students.length);
+        console.log("Loaded students from IndexedDB:", students.length);
         studentsCache = students;
         initRender();
       } else {
-        console.log("No cached data, fetching from backend...");
+        console.log("No cached student data, fetching from backend...");
         fetchFromBackend();
       }
+    }).catch(err => {
+      console.error("Error loading from IndexedDB:", err);
+      fetchFromBackend();
     });
   };
 
   request.onerror = (e) => {
     console.error("IndexedDB error:", e.target.error);
-    // fallback → fetch from backend
     fetchFromBackend();
   };
 
@@ -51,12 +55,12 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then(response => {
         if (response.status === 204) {
-          console.warn('Data not Added Yet');
-          return;
+          console.warn('No student data added yet');
+          return null;
         }
         if (response.status === 401) {
           window.location.href = "login.html";
-          return;
+          return null;
         }
         if (!response.ok) throw new Error('Network error');
         return response.json();
@@ -66,19 +70,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         studentsCache = data;
 
-        // Save to DB
         saveToIndexedDB(data).then(() => {
           console.log("Students saved to IndexedDB");
         });
 
         initRender();
       })
-      .catch(error => {
-        console.error('Fetch error:', error);
-      });
+      .catch(error => console.error('Fetch error:', error));
   }
 
-  // --- Save students to IndexedDB ---
+  // --- Save to IndexedDB ---
   function saveToIndexedDB(students) {
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, "readwrite");
@@ -89,35 +90,39 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- Load students from IndexedDB ---
+  // --- Load from IndexedDB ---
   function loadFromIndexedDB() {
     return new Promise((resolve, reject) => {
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        return resolve([]); // Store not created yet
+      }
       const tx = db.transaction(STORE_NAME, "readonly");
       const store = tx.objectStore(STORE_NAME);
       const req = store.getAll();
-    req.onsuccess = () => resolve(req.result);
+      req.onsuccess = () => resolve(req.result);
       req.onerror = (e) => reject(e.target.error);
     });
   }
 
   // --- Initialize lazy rendering ---
   function initRender() {
-    container.innerHTML = ""; // clear old
+    container.innerHTML = "";
     currentIndex = 0;
     renderNextBatch();
 
-    // Add sentinel div for infinite scroll
-    const sentinel = document.createElement("div");
-    sentinel.id = "sentinel";
-    sentinel.style.height = "50px";
-    container.after(sentinel);
+    // Sentinel for IntersectionObserver
+    let sentinel = document.getElementById("sentinel");
+    if (!sentinel) {
+      sentinel = document.createElement("div");
+      sentinel.id = "sentinel";
+      sentinel.style.height = "50px";
+      container.after(sentinel);
+    }
 
-    observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        renderNextBatch();
-      }
+    if (observer) observer.disconnect();
+    observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) renderNextBatch();
     }, { threshold: 1.0 });
-
     observer.observe(sentinel);
   }
 
@@ -151,33 +156,4 @@ document.addEventListener("DOMContentLoaded", function () {
     initIsotopeLayout();
     GLightbox({ selector: '.glightbox' });
 
-    currentIndex += PAGE_SIZE;
-
-    if (currentIndex >= studentsCache.length && observer) {
-      observer.disconnect(); // no more students
-    }
-  }
-
-  // --- Isotope layout ---
-  function initIsotopeLayout() {
-    const isoParent = container.closest('.isotope-layout');
-    const isoInstance = new Isotope(container, {
-      itemSelector: '.isotope-item',
-      layoutMode: isoParent.getAttribute('data-layout') ?? 'masonry',
-      filter: isoParent.getAttribute('data-default-filter') ?? '*',
-      sortBy: isoParent.getAttribute('data-sort') ?? 'original-order'
-    });
-
-    imagesLoaded(container, function () {
-      isoInstance.layout();
-    });
-
-    isoParent.querySelectorAll('.isotope-filters li').forEach(filterBtn => {
-      filterBtn.addEventListener('click', function () {
-        isoParent.querySelector('.filter-active')?.classList.remove('filter-active');
-        this.classList.add('filter-active');
-        isoInstance.arrange({ filter: this.getAttribute('data-filter') });
-      });
-    });
-  }
-});
+    currentInde
