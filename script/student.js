@@ -11,56 +11,82 @@ document.addEventListener("DOMContentLoaded", function () {
   let observer;
   let isoInstance;
 
+  console.log("Initializing IndexedDB...");
+
   const request = indexedDB.open(DB_NAME, DB_VERSION);
 
   request.onupgradeneeded = e => {
     db = e.target.result;
     if (!db.objectStoreNames.contains(STORE_NAME)) {
       db.createObjectStore(STORE_NAME, { keyPath: "studentid" });
+      console.log(`Object store "${STORE_NAME}" created.`);
     }
   };
 
   request.onsuccess = e => {
     db = e.target.result;
+    console.log(`IndexedDB "${DB_NAME}" opened successfully.`);
+
     loadFromIndexedDB().then(students => {
       if (students.length > 0) {
+        console.log(`Loaded ${students.length} students from IndexedDB.`);
         studentsCache = students;
         initRender();
       } else {
+        console.log("No students in IndexedDB, fetching from server...");
         fetchFromBackend();
       }
-    }).catch(fetchFromBackend);
+    }).catch(err => {
+      console.error("Error loading from IndexedDB:", err);
+      fetchFromBackend();
+    });
   };
 
-  request.onerror = fetchFromBackend;
+  request.onerror = e => {
+    console.error("Failed to open IndexedDB, fetching from server...", e);
+    fetchFromBackend();
+  };
 
   function fetchFromBackend() {
+    console.log("Fetching students from backend server...");
     fetch('https://esyserve.top/fetch/student', { method: 'GET', credentials: 'include' })
       .then(r => r.json())
       .then(data => {
-        if (!data) return;
+        if (!data) {
+          console.warn("No data received from server.");
+          return;
+        }
+        console.log(`Fetched ${data.length} students from server.`);
         studentsCache = data;
         saveToIndexedDB(data);
         initRender();
       })
-      .catch(console.error);
+      .catch(error => console.error('Fetch error:', error));
   }
 
   function saveToIndexedDB(students) {
-    if (!db) return;
+    if (!db) {
+      console.warn("Database not initialized. Cannot save to IndexedDB.");
+      return;
+    }
     const tx = db.transaction(STORE_NAME, "readwrite");
     const store = tx.objectStore(STORE_NAME);
     students.forEach(s => store.put(s));
+    tx.oncomplete = () => console.log(`Saved ${students.length} students to IndexedDB.`);
+    tx.onerror = e => console.error("Error saving to IndexedDB:", e.target.error);
   }
 
   function loadFromIndexedDB() {
     return new Promise((resolve, reject) => {
-      if (!db || !db.objectStoreNames.contains(STORE_NAME)) return resolve([]);
+      if (!db || !db.objectStoreNames.contains(STORE_NAME)) {
+        console.log("No object store found in IndexedDB.");
+        return resolve([]);
+      }
       const tx = db.transaction(STORE_NAME, "readonly");
       const store = tx.objectStore(STORE_NAME);
       const req = store.getAll();
       req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject();
+      req.onerror = e => reject(e.target.error);
     });
   }
 
@@ -75,7 +101,10 @@ document.addEventListener("DOMContentLoaded", function () {
       container.after(sentinel);
 
       observer = new IntersectionObserver(entries => {
-        if (entries[0].isIntersecting) renderNextBatch();
+        if (entries[0].isIntersecting) {
+          console.log("Loading next batch of students...");
+          renderNextBatch();
+        }
       }, { threshold: 1.0 });
 
       observer.observe(sentinel);
@@ -102,6 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
+    console.log("Rendering first batch of students...");
     renderNextBatch();
   }
 
@@ -134,8 +164,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     GLightbox({ selector: '.glightbox' });
-    currentIndex += PAGE_SIZE;
 
-    if (currentIndex >= studentsCache.length && observer) observer.disconnect();
+    currentIndex += PAGE_SIZE;
+    console.log(`Rendered ${currentIndex} of ${studentsCache.length} students.`);
+
+    if (currentIndex >= studentsCache.length && observer) {
+      observer.disconnect();
+      console.log("All students loaded, observer disconnected.");
+    }
   }
 });
