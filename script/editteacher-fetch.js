@@ -42,7 +42,7 @@
   .catch(function (error) {
     console.error('Fetch error:', error.message || error);
   });
-})();
+})(); // 👈 make sure this closing is there
 
 // 2️⃣ Fill allowed input fields only
 document.addEventListener('profileDataReady', function () {
