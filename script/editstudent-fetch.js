@@ -58,7 +58,8 @@ document.addEventListener('studentProfileReady', function () {
     'contact',
     'class',
     'sectionclass',
-    'rollno'
+    'rollno',
+    'role'
   ];
 
   allowedInputIds.forEach(function (id) {
@@ -71,3 +72,4 @@ document.addEventListener('studentProfileReady', function () {
     }
   });
 });
+
