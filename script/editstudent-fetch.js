@@ -1,103 +1,73 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('studentForm');
-  const button = document.getElementById('studentButton');
-  const preview = document.getElementById('imgstudentPreview');
-  const validator = new FormValidator(form);
-  const imgInput = form.querySelector('input[name="imgstudent"]');
+// 1️⃣ Fetch and load student profile by studentid
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const studentId = params.get("studentid");
 
-  // === Set default preview image ===
-  if (preview) {
-    preview.src = 'assets/img/3x4.png'; // Optional: use 3:4 placeholder
+  if (!studentId) {
+    console.error("❌ No studentid provided in URL");
+    return;
   }
 
-  // === Image file input preview (3:4 crop) ===
-  if (imgInput) {
-    imgInput.addEventListener('change', function () {
-      const file = imgInput.files[0];
-      if (!file || !file.type.startsWith('image/')) return;
-
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = new Image();
-        img.onload = function () {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          const targetWidth = 600; // 3:4 ratio (600x800)
-          const targetHeight = 800;
-          canvas.width = targetWidth;
-          canvas.height = targetHeight;
-
-          const srcAspect = img.width / img.height;
-          const targetAspect = targetWidth / targetHeight;
-
-          let sx, sy, sw, sh;
-          if (srcAspect > targetAspect) {
-            // source is wider than target
-            sw = img.height * targetAspect;
-            sh = img.height;
-            sx = (img.width - sw) / 2;
-            sy = 0;
-          } else {
-            // source is taller than target
-            sw = img.width;
-            sh = img.width / targetAspect;
-            sx = 0;
-            sy = (img.height - sh) / 2;
-          }
-
-          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
-          preview.src = canvas.toDataURL('image/png');
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  // === Form submission ===
-  if (button) {
-    button.addEventListener('click', function () {
-      window.ButtonController.disable(button);
-
-      const error = validator.validate();
-      if (error) {
-        window.AlertHandler.show(window.DataHandler.capitalize(error), 'error');
-        window.ButtonController.enable(button);
+  fetch(`https://esyserve.top/search/student/${encodeURIComponent(studentId)}`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(async function (response) {
+      if (response.status === 401) {
+        window.location.href = '/login.html';
         return;
       }
 
-      window.DataHandler.trimForm(form);
+      if (response.status === 204) {
+        throw new Error('Invalid Student Id');
+      }
 
-      const formData = new FormData(form);
+      if (!response.ok) {
+        const errText = await response.text().catch(() => '');
+        throw new Error(`Unexpected status: ${response.status} ${errText}`);
+      }
 
-      (async function () {
-        try {
-          const response = await fetch('https://esyserve.top/add/student', {
-            method: 'POST',
-            credentials: 'include',
-            body: formData
-          });
+      return response.json();
+    })
+    .then(function (data) {
+      if (!data) return;
 
-          const result = await response.json();
-
-          if (!response.ok) {
-            if (response.status < 500) {
-              throw new Error(result || 'Invalid input provided.');
-            }
-            console.error(result);
-            throw new Error('Something went wrong. Please try again later.');
-          }
-
-          // Success
-          window.AlertHandler.show(result, 'success');
-          form.reset();
-          preview.src = 'assets/img/3x4.png'; // Reset preview
-        } catch (error) {
-          window.AlertHandler.show(error.message, 'error');
-        } finally {
-          window.ButtonController.enable(button);
-        }
-      })();
+      // Set globally and notify listeners
+      window.studentProfile = data;
+      document.dispatchEvent(new CustomEvent('studentProfileReady'));
+    })
+    .catch(function (error) {
+      console.error('❌ Fetch error:', error.message || error);
     });
-  }
+})(); // 👈 IIFE closed properly
+
+// 2️⃣ Fill allowed input fields only
+document.addEventListener('studentProfileReady', function () {
+  const data = window.studentProfile;
+  if (!data) return;
+
+  const allowedInputIds = [
+    'student',
+    'father',
+    'mother',
+    'dob',
+    'address',
+    'contact',
+    'class',
+    'sectionclass',
+    'rollno'
+  ];
+
+  allowedInputIds.forEach(function (id) {
+    const el = document.getElementById(id);
+    if (!el) return; // skip if field not found
+
+    const value = data[id];
+    if (value !== undefined) {
+      el.value = value;
+    }
+  });
 });
