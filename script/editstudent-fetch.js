@@ -95,4 +95,4 @@ document.addEventListener('DOMContentLoaded', function () {
     })();
   });
 });
-now this is connect with indexdb also backend success add into indexdb
+
