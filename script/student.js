@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const PAGE_SIZE = 18;
   let studentsCache = [];
   let currentIndex = 0;
-  let observer;
   let isoInstance;
 
   console.log("Initializing IndexedDB...");
@@ -94,22 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
     container.innerHTML = "";
     currentIndex = 0;
 
-    if (!observer) {
-      const sentinel = document.createElement("div");
-      sentinel.id = "sentinel";
-      sentinel.style.height = "50px";
-      container.after(sentinel);
-
-      observer = new IntersectionObserver(entries => {
-        if (entries[0].isIntersecting) {
-          console.log("Loading next batch of students...");
-          renderNextBatch();
-        }
-      }, { threshold: 1.0 });
-
-      observer.observe(sentinel);
-    }
-
     // Initialize Isotope once
     const isoParent = container.closest('.isotope-layout');
     if (isoParent) {
@@ -131,14 +114,12 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    console.log("Rendering first batch of students...");
-    renderNextBatch();
+    console.log("Rendering all students...");
+    renderAllStudents();
   }
 
-  function renderNextBatch() {
-    const nextBatch = studentsCache.slice(currentIndex, currentIndex + PAGE_SIZE);
-
-    nextBatch.forEach(student => {
+  function renderAllStudents() {
+    studentsCache.forEach(student => {
       const studentName = window.DataHandler.capitalize(student.student);
       const studentClass = window.DataHandler.capitalize(student.class);
       const studentSection = window.DataHandler.capitalize(student.sectionclass);
@@ -161,24 +142,16 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
       container.appendChild(div);
 
-    if (isoInstance) {
-      isoInstance.appended(div);
-      imagesLoaded(div, () => {
-        isoInstance.layout();
-      });
-    }
-
+      if (isoInstance) {
+        isoInstance.appended(div);
+        imagesLoaded(div, () => {
+          isoInstance.layout();
+        });
+      }
     });
 
     GLightbox({ selector: '.glightbox' });
 
-    currentIndex += PAGE_SIZE;
-    console.log(`Rendered ${currentIndex} of ${studentsCache.length} students.`);
-
-    if (currentIndex >= studentsCache.length && observer) {
-      observer.disconnect();
-      console.log("All students loaded, observer disconnected.");
-    }
+    console.log(`Rendered ${studentsCache.length} students.`);
   }
 });
-
