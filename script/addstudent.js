@@ -5,36 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const validator = new FormValidator(form);
   const imgInput = form.querySelector('input[name="imgstudent"]');
 
-  // === IndexedDB Setup ===
-  let db;
-  const request = indexedDB.open("StudentDB", 1);
-
-  request.onupgradeneeded = function (e) {
-    db = e.target.result;
-    if (!db.objectStoreNames.contains("students")) {
-      db.createObjectStore("students", { keyPath: "studentid" });
-    }
-  };
-
-  request.onsuccess = function (e) {
-    db = e.target.result;
-  };
-
-  request.onerror = function (e) {
-    console.error("IndexedDB error:", e);
-  };
-
-  function saveStudentToIndexedDB(student) {
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction("students", "readwrite");
-      const store = tx.objectStore("students");
-      const request = store.put(student);
-
-      request.onsuccess = () => resolve(true);
-      request.onerror = (e) => reject(e);
-    });
-  }
-
   // === Set default preview image ===
   preview.src = 'assets/img/3x4.png'; // Optional: placeholder
 
@@ -115,19 +85,6 @@ document.addEventListener('DOMContentLoaded', function () {
         window.AlertHandler.show(result, 'success');
         form.reset();
         preview.src = 'assets/img/3x4.png'; // Reset preview
-
-        // === Add to IndexedDB ===
-        // Assume backend returns `studentid` and other student fields
-        const newStudent = {
-          studentid: result.studentid, // backend must return this
-          student: formData.get("student"),
-          class: formData.get("class"),
-          sectionclass: formData.get("sectionclass"),
-          imgstudent: preview.src // saved cropped preview
-        };
-
-        await saveStudentToIndexedDB(newStudent);
-        console.log("Student saved locally:", newStudent);
 
       } catch (error) {
         window.AlertHandler.show(error.message, 'error');
