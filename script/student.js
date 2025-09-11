@@ -41,35 +41,33 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   };
 
-  request.onerror = e => {e
+  request.onerror = e => {
     console.error("Failed to open IndexedDB, fetching from server...", e);
     fetchFromBackend();
   };
 
   function fetchFromBackend() {
-  console.log("Fetching students from backend server...");
-  
-  fetch('https://esyserve.top/fetch/student', { method: 'GET', credentials: 'include' })
-    .then(r => {
-      if (!r.ok) throw new Error(`Server responded with ${r.status}`);
-      return r.json();
-    })
-    .then(data => {
-      console.log("Raw server response:", data);
+    console.log("Fetching students from backend server...");
+    fetch('https://esyserve.top/fetch/student', { method: 'GET', credentials: 'include' })
+      .then(r => {
+        if (!r.ok) throw new Error(`Server responded with ${r.status}`);
+        return r.json();
+      })
+      .then(data => {
+        console.log("Raw server response:", data);
 
-      if (!Array.isArray(data)) {
-        console.warn("Expected an array of students but got:", data);
-        return;
-      }
+        if (!Array.isArray(data)) {
+          console.warn("Expected an array of students but got:", data);
+          return;
+        }
 
-      console.log(`Fetched ${data.length} students from server.`);
-      studentsCache = data;  
-      saveToIndexedDB(data);
-      initRender();
-    })
-    .catch(error => console.error('Fetch error:', error));
-}
-
+        console.log(`Fetched ${data.length} students from server.`);
+        studentsCache = data;
+        saveToIndexedDB(data);
+        initRender();
+      })
+      .catch(error => console.error('Fetch error:', error));
+  }
 
   function saveToIndexedDB(students) {
     if (!db) {
@@ -101,7 +99,6 @@ document.addEventListener("DOMContentLoaded", function () {
     container.innerHTML = "";
     currentIndex = 0;
 
-    // Initialize Isotope once
     const isoParent = container.closest('.isotope-layout');
     if (isoParent) {
       isoInstance = new Isotope(container, {
@@ -128,13 +125,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderAllStudents() {
     studentsCache.forEach(student => {
-      const studentName = window.DataHandler.capitalize(student.student);
-      const studentClass = window.DataHandler.capitalize(student.class);
-      const studentSection = window.DataHandler.capitalize(student.sectionclass);
+      const studentName = window.DataHandler?.capitalize(student.student) ?? student.student;
+      const studentClass = window.DataHandler?.capitalize(student.class) ?? student.class;
+      const studentSection = window.DataHandler?.capitalize(student.sectionclass) ?? student.sectionclass;
+
+      const safeClass = (student.class || "unknown").replace(/\s+/g, '-').toLowerCase();
 
       const div = document.createElement("div");
-      // ✅ force Bootstrap 3-per-row grid
-      div.className = `col-lg-4 col-md-6 portfolio-item isotope-item filter-${student.class}`;
+      div.className = `col-lg-4 col-md-6 portfolio-item isotope-item filter-${safeClass}`;
       div.innerHTML = `
         <div class="portfolio-content h-100">
           <img src="${student.imgstudent}" class="img-fluid" alt="${studentName}">
@@ -152,9 +150,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (isoInstance) {
         isoInstance.appended(div);
-        imagesLoaded(div, () => {
-          isoInstance.layout();
-        });
       }
     });
 
@@ -163,4 +158,3 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(`Rendered ${studentsCache.length} students.`);
   }
 });
-
