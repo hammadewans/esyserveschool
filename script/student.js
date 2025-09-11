@@ -186,22 +186,15 @@ document.addEventListener("DOMContentLoaded", () => {
     studentsCache = await getAllStudentsFromDB();
 
     if (studentsCache.length === 0) {
+      // Only fetch from server if no data in IndexedDB
       const freshStudents = await fetchStudentsFromServer();
       if (freshStudents.length) {
         studentsCache = freshStudents;
         saveStudents(freshStudents);
       }
     } else {
-      // Fetch fresh students and merge with cached students (no duplicates)
-      const freshStudents = await fetchStudentsFromServer();
-      if (freshStudents.length) {
-        freshStudents.forEach(newStu => {
-          if (!studentsCache.some(s => s.studentid === newStu.studentid)) {
-            studentsCache.push(newStu);
-          }
-        });
-        saveStudents(studentsCache);
-      }
+      // We have data in IndexedDB, so skip fetching
+      console.log("Using cached students, skipping server fetch");
     }
 
     if (studentsCache.length) {
