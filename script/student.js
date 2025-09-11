@@ -4,11 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const DB_VERSION = 1;
   const STORE_NAME = "students";
   let db;
-
-  const PAGE_SIZE = 18;
   let studentsCache = [];
-  let currentIndex = 0;
-  let observer;
   let isoInstance;
 
   console.log("Initializing IndexedDB for students...");
@@ -30,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (students.length > 0) {
         console.log(`Loaded ${students.length} students from IndexedDB.`);
         studentsCache = students;
-        initRender();
+        renderAll();
       } else {
         console.log("No students in IndexedDB, fetching from server...");
         fetchFromBackend();
@@ -58,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(`Fetched ${data.length} students from server.`);
         studentsCache = data;
         saveToIndexedDB(data).then(() => console.log("Students saved to IndexedDB."));
-        initRender();
+        renderAll();
       })
       .catch(err => console.error("Fetch error:", err));
   }
@@ -85,68 +81,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function initRender() {
-    console.log("Initializing render...");
+  function renderAll() {
+    console.log("Rendering all students...");
     container.innerHTML = "";
-    currentIndex = 0;
 
-    // Sentinel for lazy loading
-    let sentinel = document.getElementById("sentinel");
-    if (!sentinel) {
-      sentinel = document.createElement("div");
-      sentinel.id = "sentinel";
-      sentinel.style.height = "50px";
-      container.after(sentinel);
-    }
-
-    if (observer) observer.disconnect();
-    observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        console.log("Loading next batch of students...");
-        renderNextBatch();
-      }
-    }, { threshold: 1.0 });
-    observer.observe(sentinel);
-
-    // Initialize Isotope once
-    const isoParent = container.closest('.isotope-layout');
-    if (isoParent && !isoInstance) {
-      isoInstance = new Isotope(container, {
-        itemSelector: '.isotope-item',
-        layoutMode: isoParent.getAttribute('data-layout') ?? 'masonry',
-        filter: isoParent.getAttribute('data-default-filter') ?? '*',
-        sortBy: isoParent.getAttribute('data-sort') ?? 'original-order'
-      });
-      imagesLoaded(container, () => isoInstance.layout());
-      isoParent.querySelectorAll('.isotope-filters li').forEach(btn => {
-        btn.addEventListener('click', function () {
-          isoParent.querySelector('.filter-active')?.classList.remove('filter-active');
-          this.classList.add('filter-active');
-          isoInstance.arrange({ filter: this.getAttribute('data-filter') });
-        });
-      });
-    }
-
-    console.log("Rendering first batch of students...");
-    renderNextBatch();
-  }
-
-  function renderNextBatch() {
-    const nextBatch = studentsCache.slice(currentIndex, currentIndex + PAGE_SIZE);
-    if (nextBatch.length === 0) return;
-
-    nextBatch.forEach(student => {
-      const studentName = window.DataHandler.capitalize(student.student);
+    studentsCache.forEach(student => {
+      const studentName = window.DataHandler.capitalize(student.student ?? "Unknown");
       const studentClass = window.DataHandler.capitalize(student.class ?? "Unknown");
       const studentSection = window.DataHandler.capitalize(student.sectionclass ?? "A");
       const studentRoll = student.rollno ?? "N/A";
 
-      // ✅ Handle missing image fallback
       let imgSrc = student.imgstudent && student.imgstudent.trim()
         ? student.imgstudent
         : "img/test.jpg";
 
-      // ✅ Use class+section for filtering
       const filterClass = `${studentClass}-${studentSection}`.toLowerCase().replace(/\s+/g, "-");
 
       const div = document.createElement("div");
@@ -174,23 +122,27 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
       `;
       container.appendChild(div);
-
-      if (isoInstance) {
-        isoInstance.appended(div);
-        imagesLoaded(div, () => {
-          isoInstance.layout();
-        });
-      }
     });
 
-    GLightbox({ selector: '.glightbox' });
-
-    currentIndex += PAGE_SIZE;
-    console.log(`Rendered ${currentIndex} of ${studentsCache.length} students.`);
-
-    if (currentIndex >= studentsCache.length && observer) {
-      observer.disconnect();
-      console.log("All students loaded, observer disconnected.");
+    const isoParent = container.closest('.isotope-layout');
+    if (isoParent && !isoInstance) {
+      isoInstance = new Isotope(container, {
+        itemSelector: '.isotope-item',
+        layoutMode: isoParent.getAttribute('data-layout') ?? 'masonry',
+        filter: isoParent.getAttribute('data-default-filter') ?? '*',
+        sortBy: isoParent.getAttribute('data-sort') ?? 'original-order'
+      });
+      imagesLoaded(container, () => isoInstance.layout());
+      isoParent.querySelectorAll('.isotope-filters li').forEach(btn => {
+        btn.addEventListener('click', function () {
+          isoParent.querySelector('.filter-active')?.classList.remove('filter-active');
+          this.classList.add('filter-active');
+          isoInstance.arrange({ filter: this.getAttribute('data-filter') });
+        });
+      });
     }
+
+    GLightbox({ selector: '.glightbox' });
+    console.log("All students rendered.");
   }
 });
