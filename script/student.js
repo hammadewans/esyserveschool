@@ -41,27 +41,35 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   };
 
-  request.onerror = e => {
+  request.onerror = e => {e
     console.error("Failed to open IndexedDB, fetching from server...", e);
     fetchFromBackend();
   };
 
   function fetchFromBackend() {
-    console.log("Fetching students from backend server...");
-    fetch('https://esyserve.top/fetch/student', { method: 'GET', credentials: 'include' })
-      .then(r => r.json())
-      .then(data => {
-        if (!data) {
-          console.warn("No data received from server.");
-          return;
-        }
-        console.log(`Fetched ${data.length} students from server.`);
-        studentsCache = data;
-        saveToIndexedDB(data);
-        initRender();
-      })
-      .catch(error => console.error('Fetch error:', error));
-  }
+  console.log("Fetching students from backend server...");
+  
+  fetch('https://esyserve.top/fetch/student', { method: 'GET', credentials: 'include' })
+    .then(r => {
+      if (!r.ok) throw new Error(`Server responded with ${r.status}`);
+      return r.json();
+    })
+    .then(data => {
+      console.log("Raw server response:", data);
+
+      if (!Array.isArray(data)) {
+        console.warn("Expected an array of students but got:", data);
+        return;
+      }
+
+      console.log(`Fetched ${data.length} students from server.`);
+      studentsCache = data;  
+      saveToIndexedDB(data);
+      initRender();
+    })
+    .catch(error => console.error('Fetch error:', error));
+}
+
 
   function saveToIndexedDB(students) {
     if (!db) {
@@ -155,3 +163,4 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(`Rendered ${studentsCache.length} students.`);
   }
 });
+
