@@ -136,34 +136,46 @@ document.addEventListener("DOMContentLoaded", function () {
     if (nextBatch.length === 0) return;
 
     nextBatch.forEach(teacher => {
-      const teacherName = window.DataHandler.capitalize(teacher.teacher);
-      const teacherRole = window.DataHandler.capitalize(teacher.role);
+      const teacherName = window.DataHandler.capitalize(teacher.teacher ?? "Unknown");
+      const teacherRole = window.DataHandler.capitalize(teacher.role ?? "Staff");
+
+      // ✅ Handle missing image
+      let imgSrc = teacher.imgteacher && teacher.imgteacher.trim()
+        ? teacher.imgteacher
+        : "img/test.jpg";
 
       const div = document.createElement("div");
-      // ✅ Force Bootstrap grid: 3 per row on desktop, 2 on tablet, 1 on mobile
       div.className = `col-lg-4 col-md-6 portfolio-item isotope-item filter-${teacherRole.toLowerCase()}`;
       div.innerHTML = `
         <div class="portfolio-content h-100">
-          <img src="${teacher.imgteacher}" class="img-fluid" alt="${teacherName}">
+          <img src="${imgSrc}" class="img-fluid" alt="${teacherName}" onerror="this.src='img/test.jpg'">
           <div class="portfolio-info">
             <h4>${teacherName}</h4>
             <p>Role: ${teacherRole}</p>
             <div>
-              <a href="${teacher.imgteacher}" title="${teacherName}" data-gallery="portfolio-gallery-${teacherRole}" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-              <a href="teacher-details.html?teacherid=${teacher.teacherid}" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
+              <a href="${imgSrc}" 
+                 title="${teacherName}" 
+                 data-gallery="portfolio-gallery-${teacherRole}" 
+                 class="glightbox preview-link">
+                 <i class="bi bi-zoom-in"></i>
+              </a>
+              <a href="teacher-details.html?teacherid=${teacher.teacherid}" 
+                 title="More Details" 
+                 class="details-link">
+                 <i class="bi bi-link-45deg"></i>
+              </a>
             </div>
           </div>
         </div>
       `;
       container.appendChild(div);
 
-        if (isoInstance) {
-          isoInstance.appended(div);
-          imagesLoaded(div, () => {
-            isoInstance.layout();
-          });
-        }
-
+      if (isoInstance) {
+        isoInstance.appended(div);
+        imagesLoaded(div, () => {
+          isoInstance.layout();
+        });
+      }
     });
 
     GLightbox({ selector: '.glightbox' });
@@ -177,4 +189,3 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
-
