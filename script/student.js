@@ -8,11 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const DB_NAME = "EsyServeStudentDB";
   const DB_VERSION = 1;
   const STORE_NAME = "students";
-  const PAGE_SIZE = 18;
 
   let db;
   let studentsCache = [];
-  let currentIndex = 0;
   let isoInstance;
 
   console.log("Initializing IndexedDB...");
@@ -106,44 +104,32 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
   // Rendering
   // ------------------------------
-  function initRender() {
+  function renderAllStudents() {
     container.innerHTML = "";
-    currentIndex = 0;
-    isoInstance = new Isotope(container, {
-      itemSelector: ".portfolio-item",
-      layoutMode: "fitRows"
-    });
-    renderNextBatch();
-  }
 
-  function renderNextBatch() {
-    if (currentIndex >= studentsCache.length) return;
-
-    const batch = studentsCache.slice(currentIndex, currentIndex + PAGE_SIZE);
-    currentIndex += PAGE_SIZE;
-
-    const elements = batch.map(student => {
+    const elements = studentsCache.map(student => {
       const safeClass = (student.class || "unknown")
         .replace(/\s+/g, "-")
         .toLowerCase();
       const studentName =
         window.DataHandler?.capitalize(student.student) ?? student.student;
 
-      const imgSrc = student.imgstudent
+      const imgFile = student.imgstudent && student.imgstudent.trim()
         ? `images/${student.imgstudent}`
-        : "images/default-avatar.png"; // Fallback image
+        : "images/default.png"; // ✅ fallback image
 
       const el = document.createElement("div");
       el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
       el.innerHTML = `
         <div class="portfolio-content h-100">
-          <img src="${imgSrc}" class="img-fluid student-img" alt="${studentName}">
+          <img src="${imgFile}" class="img-fluid student-img" alt="${studentName}" 
+               onerror="this.onerror=null;this.src='images/default.png';">
           <div class="portfolio-info">
             <h4>${studentName}</h4>
             <p>Class: ${student.class ?? "N/A"}, Roll No: ${student.rollno ?? "N/A"}</p>
             ${
-              student.imgstudent
-                ? `<a href="${imgSrc}" title="${studentName}" 
+              student.imgstudent && student.imgstudent.trim()
+                ? `<a href="images/${student.imgstudent}" title="${studentName}" 
                     data-gallery="portfolio-gallery-student" 
                     class="glightbox preview-link">
                   <i class="bi bi-zoom-in"></i>
@@ -153,36 +139,20 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>`;
 
-      // Add error fallback to image
-      el.querySelector("img").addEventListener("error", () => {
-        el.querySelector("img").src = "images/default-avatar.png";
-      });
-
       return el;
     });
 
     container.append(...elements);
-    isoInstance.appended(elements);
-    isoInstance.layout();
 
-    // Refresh GLightbox
+    // Setup Isotope layout
+    isoInstance = new Isotope(container, {
+      itemSelector: ".portfolio-item",
+      layoutMode: "fitRows"
+    });
+
+    // Setup GLightbox
     if (window._glightboxInstance) window._glightboxInstance.destroy();
     window._glightboxInstance = GLightbox({ selector: ".glightbox" });
-  }
-
-  // ------------------------------
-  // Infinite Scroll
-  // ------------------------------
-  function setupInfiniteScroll() {
-    const sentinel = document.createElement("div");
-    sentinel.className = "sentinel";
-    container.after(sentinel);
-
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) renderNextBatch();
-    }, { threshold: 0.1 });
-
-    observer.observe(sentinel);
   }
 
   // ------------------------------
@@ -194,7 +164,6 @@ document.addEventListener("DOMContentLoaded", () => {
     studentsCache = await getAllStudentsFromDB();
 
     if (studentsCache.length === 0) {
-      // No local data, fetch from server
       const freshStudents = await fetchStudentsFromServer();
       if (freshStudents.length) {
         studentsCache = freshStudents;
@@ -203,8 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (studentsCache.length) {
-      initRender();
-      setupInfiniteScroll();
+      renderAllStudents();
     } else {
       container.innerHTML = `<p class="text-danger">⚠️ No student data available.</p>`;
     }
