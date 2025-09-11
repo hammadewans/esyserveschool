@@ -8,8 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const DB_NAME = "EsyServeStudentDB";
   const DB_VERSION = 1;
   const STORE_NAME = "students";
-
   const PAGE_SIZE = 18;
+
   let db;
   let studentsCache = [];
   let currentIndex = 0;
@@ -54,10 +54,33 @@ document.addEventListener("DOMContentLoaded", () => {
     tx.onerror = e => console.error("❌ Save error:", e.target.error);
   }
 
+  function getAllStudentsFromDB() {
+    return new Promise((resolve, reject) => {
+      if (!db) {
+        reject("Database not initialized");
+        return;
+      }
+
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        console.log(`📦 Loaded ${request.result.length} students from IndexedDB`);
+        resolve(request.result);
+      };
+
+      request.onerror = e => {
+        console.error("❌ Read error:", e.target.error);
+        reject(e.target.error);
+      };
+    });
+  }
+
   // ------------------------------
-  // Fetch Students
+  // Fetch Students from Server
   // ------------------------------
-  async function fetchStudents() {
+  async function fetchStudentsFromServer() {
     try {
       console.log("🌐 Fetching students from server...");
       const res = await fetch("https://esyserve.top/fetch/student", {
@@ -65,15 +88,14 @@ document.addEventListener("DOMContentLoaded", () => {
         credentials: "include"
       });
       if (!res.ok) throw new Error(`Network error: ${res.status}`);
-
       const data = await res.json();
+
       if (!Array.isArray(data)) {
         console.warn("⚠️ Expected array, got:", data);
         return [];
       }
 
       console.log(`✅ Fetched ${data.length} students`);
-      console.log(data);
       return data;
     } catch (err) {
       console.error("❌ Fetch error:", err);
@@ -107,21 +129,35 @@ document.addEventListener("DOMContentLoaded", () => {
       const studentName =
         window.DataHandler?.capitalize(student.student) ?? student.student;
 
+      const imgSrc = student.imgstudent
+        ? `images/${student.imgstudent}`
+        : "images/default-avatar.png"; // Fallback image
+
       const el = document.createElement("div");
       el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
       el.innerHTML = `
         <div class="portfolio-content h-100">
-          <img src="images/${student.imgstudent}" class="img-fluid" alt="">
+          <img src="${imgSrc}" class="img-fluid student-img" alt="${studentName}">
           <div class="portfolio-info">
             <h4>${studentName}</h4>
-            <p>Class: ${student.class}, Roll No: ${student.rollno}</p>
-            <a href="images/${student.imgstudent}" title="${studentName}" 
-               data-gallery="portfolio-gallery-student" 
-               class="glightbox preview-link">
-              <i class="bi bi-zoom-in"></i>
-            </a>
+            <p>Class: ${student.class ?? "N/A"}, Roll No: ${student.rollno ?? "N/A"}</p>
+            ${
+              student.imgstudent
+                ? `<a href="${imgSrc}" title="${studentName}" 
+                    data-gallery="portfolio-gallery-student" 
+                    class="glightbox preview-link">
+                  <i class="bi bi-zoom-in"></i>
+                </a>`
+                : `<span class="text-muted">No image available</span>`
+            }
           </div>
         </div>`;
+
+      // Add error fallback to image
+      el.querySelector("img").addEventListener("error", () => {
+        el.querySelector("img").src = "images/default-avatar.png";
+      });
+
       return el;
     });
 
@@ -154,12 +190,23 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------
   (async function init() {
     await openDB();
-    studentsCache = await fetchStudents();
+
+    studentsCache = await getAllStudentsFromDB();
+
+    if (studentsCache.length === 0) {
+      // No local data, fetch from server
+      const freshStudents = await fetchStudentsFromServer();
+      if (freshStudents.length) {
+        studentsCache = freshStudents;
+        saveStudents(freshStudents);
+      }
+    }
+
     if (studentsCache.length) {
-      saveStudents(studentsCache);
       initRender();
       setupInfiniteScroll();
+    } else {
+      container.innerHTML = `<p class="text-danger">⚠️ No student data available.</p>`;
     }
   })();
 });
-
