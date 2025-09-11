@@ -191,6 +191,17 @@ document.addEventListener("DOMContentLoaded", () => {
         studentsCache = freshStudents;
         saveStudents(freshStudents);
       }
+    } else {
+      // Fetch fresh students and merge with cached students (no duplicates)
+      const freshStudents = await fetchStudentsFromServer();
+      if (freshStudents.length) {
+        freshStudents.forEach(newStu => {
+          if (!studentsCache.some(s => s.studentid === newStu.studentid)) {
+            studentsCache.push(newStu);
+          }
+        });
+        saveStudents(studentsCache);
+      }
     }
 
     if (studentsCache.length) {
@@ -200,4 +211,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 });
-
