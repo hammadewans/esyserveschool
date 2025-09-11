@@ -4,11 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const DB_VERSION = 1;
   const STORE_NAME = "teachers";
   let db;
-
-  const PAGE_SIZE = 18;
   let teachersCache = [];
-  let currentIndex = 0;
-  let observer;
   let isoInstance;
 
   console.log("Initializing IndexedDB for teachers...");
@@ -30,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (teachers.length > 0) {
         console.log(`Loaded ${teachers.length} teachers from IndexedDB.`);
         teachersCache = teachers;
-        initRender();
+        renderAll();
       } else {
         console.log("No teachers in IndexedDB, fetching from server...");
         fetchFromBackend();
@@ -58,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(`Fetched ${data.length} teachers from server.`);
         teachersCache = data;
         saveToIndexedDB(data).then(() => console.log("Teachers saved to IndexedDB."));
-        initRender();
+        renderAll();
       })
       .catch(err => console.error("Fetch error:", err));
   }
@@ -85,61 +81,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function initRender() {
-    console.log("Initializing render...");
+  function renderAll() {
+    console.log("Rendering all teachers...");
     container.innerHTML = "";
-    currentIndex = 0;
 
-    // Sentinel for lazy loading
-    let sentinel = document.getElementById("sentinel");
-    if (!sentinel) {
-      sentinel = document.createElement("div");
-      sentinel.id = "sentinel";
-      sentinel.style.height = "50px";
-      container.after(sentinel);
-    }
-
-    if (observer) observer.disconnect();
-    observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        console.log("Loading next batch of teachers...");
-        renderNextBatch();
-      }
-    }, { threshold: 1.0 });
-    observer.observe(sentinel);
-
-    // Initialize Isotope once
-    const isoParent = container.closest('.isotope-layout');
-    if (isoParent && !isoInstance) {
-      isoInstance = new Isotope(container, {
-        itemSelector: '.isotope-item',
-        layoutMode: isoParent.getAttribute('data-layout') ?? 'masonry',
-        filter: isoParent.getAttribute('data-default-filter') ?? '*',
-        sortBy: isoParent.getAttribute('data-sort') ?? 'original-order'
-      });
-      imagesLoaded(container, () => isoInstance.layout());
-      isoParent.querySelectorAll('.isotope-filters li').forEach(btn => {
-        btn.addEventListener('click', function () {
-          isoParent.querySelector('.filter-active')?.classList.remove('filter-active');
-          this.classList.add('filter-active');
-          isoInstance.arrange({ filter: this.getAttribute('data-filter') });
-        });
-      });
-    }
-
-    console.log("Rendering first batch of teachers...");
-    renderNextBatch();
-  }
-
-  function renderNextBatch() {
-    const nextBatch = teachersCache.slice(currentIndex, currentIndex + PAGE_SIZE);
-    if (nextBatch.length === 0) return;
-
-    nextBatch.forEach(teacher => {
+    teachersCache.forEach(teacher => {
       const teacherName = window.DataHandler.capitalize(teacher.teacher ?? "Unknown");
       const teacherRole = window.DataHandler.capitalize(teacher.role ?? "Staff");
 
-      // ✅ Handle missing image
       let imgSrc = teacher.imgteacher && teacher.imgteacher.trim()
         ? teacher.imgteacher
         : "img/test.jpg";
@@ -169,23 +118,27 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
       `;
       container.appendChild(div);
-
-      if (isoInstance) {
-        isoInstance.appended(div);
-        imagesLoaded(div, () => {
-          isoInstance.layout();
-        });
-      }
     });
 
-    GLightbox({ selector: '.glightbox' });
-
-    currentIndex += PAGE_SIZE;
-    console.log(`Rendered ${currentIndex} of ${teachersCache.length} teachers.`);
-
-    if (currentIndex >= teachersCache.length && observer) {
-      observer.disconnect();
-      console.log("All teachers loaded, observer disconnected.");
+    const isoParent = container.closest('.isotope-layout');
+    if (isoParent && !isoInstance) {
+      isoInstance = new Isotope(container, {
+        itemSelector: '.isotope-item',
+        layoutMode: isoParent.getAttribute('data-layout') ?? 'masonry',
+        filter: isoParent.getAttribute('data-default-filter') ?? '*',
+        sortBy: isoParent.getAttribute('data-sort') ?? 'original-order'
+      });
+      imagesLoaded(container, () => isoInstance.layout());
+      isoParent.querySelectorAll('.isotope-filters li').forEach(btn => {
+        btn.addEventListener('click', function () {
+          isoParent.querySelector('.filter-active')?.classList.remove('filter-active');
+          this.classList.add('filter-active');
+          isoInstance.arrange({ filter: this.getAttribute('data-filter') });
+        });
+      });
     }
+
+    GLightbox({ selector: '.glightbox' });
+    console.log("All teachers rendered.");
   }
 });
