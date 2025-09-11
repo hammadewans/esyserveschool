@@ -15,9 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("Initializing IndexedDB...");
 
-  // ------------------------------
   // IndexedDB Helpers
-  // ------------------------------
   function openDB() {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -75,9 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ------------------------------
   // Fetch Students from Server
-  // ------------------------------
   async function fetchStudentsFromServer() {
     try {
       console.log("🌐 Fetching students from server...");
@@ -101,11 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ------------------------------
   // Rendering
-  // ------------------------------
   function renderAllStudents() {
-    // Destroy previous Isotope instance before clearing container
     if (isoInstance) {
       isoInstance.destroy();
       isoInstance = null;
@@ -122,8 +115,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const studentName =
         window.DataHandler?.capitalize(student.student) ?? student.student;
 
-      // Handle base64, file name, or fallback image
+      // Determine image source:
+      // If imgstudent starts with 'data:image/', treat as base64
+      // Else if imgstudent is filename, use images/ folder
+      // Else fallback to default
       let imgFile;
+      let isDefaultImage = false;
+
       if (student.imgstudent && student.imgstudent.trim()) {
         if (student.imgstudent.startsWith("data:image/")) {
           imgFile = student.imgstudent;
@@ -132,6 +130,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } else {
         imgFile = "images/default.jpg";
+        isDefaultImage = true;
+      }
+
+      // Also mark default if imgFile is exactly default.jpg path
+      if (imgFile === "images/default.jpg") {
+        isDefaultImage = true;
       }
 
       const el = document.createElement("div");
@@ -144,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <h4>${studentName}</h4>
             <p>Class: ${student.class ?? "N/A"}, Roll No: ${student.rollno ?? "N/A"}</p>
             ${
-              student.imgstudent && student.imgstudent.trim()
+              !isDefaultImage
                 ? `<a href="${imgFile}" title="${studentName}" 
                     data-gallery="portfolio-gallery-student" 
                     class="glightbox preview-link">
@@ -160,20 +164,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     container.append(...elements);
 
-    // Initialize Isotope layout after appending
     isoInstance = new Isotope(container, {
       itemSelector: ".portfolio-item",
       layoutMode: "fitRows"
     });
 
-    // Setup GLightbox (destroy previous instance first)
     if (window._glightboxInstance) window._glightboxInstance.destroy();
     window._glightboxInstance = GLightbox({ selector: ".glightbox" });
   }
 
-  // ------------------------------
   // Init
-  // ------------------------------
   (async function init() {
     await openDB();
 
