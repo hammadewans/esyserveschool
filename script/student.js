@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const imgFile = student.imgstudent && student.imgstudent.trim()
         ? `images/${student.imgstudent}`
-        : "images/default.png"; // ✅ fallback image
+        : "images/default.jpg"; // ✅ fallback image
 
       const el = document.createElement("div");
       el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
@@ -178,3 +178,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 });
+
