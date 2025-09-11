@@ -1,11 +1,16 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("portfolio-container");
+  if (!container) {
+    console.error("❌ #portfolio-container not found");
+    return;
+  }
+
   const DB_NAME = "EsyServeStudentDB";
   const DB_VERSION = 1;
   const STORE_NAME = "students";
-  let db;
 
   const PAGE_SIZE = 18;
+  let db;
   let studentsCache = [];
   let currentIndex = 0;
   let isoInstance;
@@ -13,81 +18,70 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Initializing IndexedDB...");
 
   // ------------------------------
-  // IndexedDB Initialization
+  // IndexedDB Helpers
   // ------------------------------
-  const request = indexedDB.open(DB_NAME, DB_VERSION);
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-  request.onupgradeneeded = function (event) {
-    db = event.target.result;
-    if (!db.objectStoreNames.contains(STORE_NAME)) {
-      db.createObjectStore(STORE_NAME, { keyPath: "studentid" });
-      console.log("Object store created:", STORE_NAME);
-    }
-  };
-
-  request.onsuccess = function (event) {
-    db = event.target.result;
-    console.log("IndexedDB opened successfully:", DB_NAME);
-    fetchFromBackend();
-  };
-
-  request.onerror = function (event) {
-    console.error("IndexedDB error:", event.target.errorCode);
-  };
-
-  // ------------------------------
-  // Fetch Students from Backend
-  // ------------------------------
-  function fetchFromBackend() {
-    console.log("Fetching students from backend server...");
-
-    fetch("https://esyserve.top/fetch/student", {
-      method: "GET",
-      credentials: "include" // ✅ FIXED: allow cookies/session
-    })
-      .then(res => {
-        if (!res.ok) throw new Error(`Network error: ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
-        if (!Array.isArray(data)) {
-          console.warn("Expected an array of students but got:", data);
-          return;
+      request.onupgradeneeded = e => {
+        db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: "studentid" });
+          console.log(`✅ Object store created: ${STORE_NAME}`);
         }
-        console.log(`Fetched ${data.length} students from server.`);
-        studentsCache = data;
-        saveToIndexedDB(data);
-        initRender();
-      })
-      .catch(err => console.error("Error fetching students:", err));
+      };
+
+      request.onsuccess = e => {
+        db = e.target.result;
+        console.log(`✅ IndexedDB opened: ${DB_NAME}`);
+        resolve(db);
+      };
+
+      request.onerror = e => {
+        console.error("❌ IndexedDB error:", e.target.errorCode);
+        reject(e.target.error);
+      };
+    });
   }
 
-  // ------------------------------
-  // Save to IndexedDB
-  // ------------------------------
-  function saveToIndexedDB(students) {
-    if (!db) {
-      console.warn("Database not initialized yet.");
-      return;
-    }
-
+  function saveStudents(students) {
+    if (!db) return;
     const tx = db.transaction(STORE_NAME, "readwrite");
     const store = tx.objectStore(STORE_NAME);
-
-    students.forEach(student => {
-      store.put(student);
-    });
-
-    tx.oncomplete = () => {
-      console.log("All students saved to IndexedDB.");
-    };
-    tx.onerror = (event) => {
-      console.error("Error saving students:", event.target.error);
-    };
+    students.forEach(s => store.put(s));
+    tx.oncomplete = () => console.log("✅ Students saved to IndexedDB");
+    tx.onerror = e => console.error("❌ Save error:", e.target.error);
   }
 
   // ------------------------------
-  // Render Students
+  // Fetch Students
+  // ------------------------------
+  async function fetchStudents() {
+    try {
+      console.log("🌐 Fetching students from server...");
+      const res = await fetch("https://esyserve.top/fetch/student", {
+        method: "GET",
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error(`Network error: ${res.status}`);
+
+      const data = await res.json();
+      if (!Array.isArray(data)) {
+        console.warn("⚠️ Expected array, got:", data);
+        return [];
+      }
+
+      console.log(`✅ Fetched ${data.length} students`);
+      return data;
+    } catch (err) {
+      console.error("❌ Fetch error:", err);
+      return [];
+    }
+  }
+
+  // ------------------------------
+  // Rendering
   // ------------------------------
   function initRender() {
     container.innerHTML = "";
@@ -106,8 +100,11 @@ document.addEventListener("DOMContentLoaded", function () {
     currentIndex += PAGE_SIZE;
 
     const elements = batch.map(student => {
-      const safeClass = (student.class || "unknown").replace(/\s+/g, "-").toLowerCase();
-      const studentName = window.DataHandler?.capitalize(student.student) ?? student.student;
+      const safeClass = (student.class || "unknown")
+        .replace(/\s+/g, "-")
+        .toLowerCase();
+      const studentName =
+        window.DataHandler?.capitalize(student.student) ?? student.student;
 
       const el = document.createElement("div");
       el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
@@ -117,12 +114,13 @@ document.addEventListener("DOMContentLoaded", function () {
           <div class="portfolio-info">
             <h4>${studentName}</h4>
             <p>Class: ${student.class}, Roll No: ${student.rollno}</p>
-            <a href="images/${student.imgstudent}" title="${studentName}" data-gallery="portfolio-gallery-student" class="glightbox preview-link">
+            <a href="images/${student.imgstudent}" title="${studentName}" 
+               data-gallery="portfolio-gallery-student" 
+               class="glightbox preview-link">
               <i class="bi bi-zoom-in"></i>
             </a>
           </div>
-        </div>
-      `;
+        </div>`;
       return el;
     });
 
@@ -130,21 +128,36 @@ document.addEventListener("DOMContentLoaded", function () {
     isoInstance.appended(elements);
     isoInstance.layout();
 
-    // Re-init GLightbox after adding new elements
-    GLightbox({ selector: ".glightbox" });
+    // Refresh GLightbox
+    if (window._glightboxInstance) window._glightboxInstance.destroy();
+    window._glightboxInstance = GLightbox({ selector: ".glightbox" });
   }
 
   // ------------------------------
-  // Infinite Scroll (Lazy Loading)
+  // Infinite Scroll
   // ------------------------------
-  const observer = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      renderNextBatch();
-    }
-  }, { threshold: 0.1 });
+  function setupInfiniteScroll() {
+    const sentinel = document.createElement("div");
+    sentinel.className = "sentinel";
+    container.after(sentinel);
 
-  const sentinel = document.createElement("div");
-  sentinel.className = "sentinel";
-  container.after(sentinel);
-  observer.observe(sentinel);
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) renderNextBatch();
+    }, { threshold: 0.1 });
+
+    observer.observe(sentinel);
+  }
+
+  // ------------------------------
+  // Init
+  // ------------------------------
+  (async function init() {
+    await openDB();
+    studentsCache = await fetchStudents();
+    if (studentsCache.length) {
+      saveStudents(studentsCache);
+      initRender();
+      setupInfiniteScroll();
+    }
+  })();
 });
