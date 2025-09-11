@@ -84,12 +84,10 @@ document.addEventListener("DOMContentLoaded", function () {
   function renderAll() {
     console.log("Rendering all students...");
     container.innerHTML = "";
-    console.log(studentsCache);
     studentsCache.forEach(student => {
       const studentName = window.DataHandler.capitalize(student.student ?? "Unknown");
       const studentClass = window.DataHandler.capitalize(student.class ?? "Unknown");
       const studentSection = window.DataHandler.capitalize(student.sectionclass ?? "A");
-      const studentRoll = student.rollno ?? "N/A";
 
       let imgSrc = student.imgstudent && student.imgstudent.trim()
         ? student.imgstudent
@@ -104,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <img src="${imgSrc}" class="img-fluid" alt="${studentName}" onerror="this.src='img/test.jpg'">
           <div class="portfolio-info">
             <h4>${studentName}</h4>
-            <p>Class: ${studentClass} - Section ${studentSection}, Roll No: ${studentRoll}</p>
+            <p>Class: ${studentClass} - Section ${studentSection}</p>
             <div>
               <a href="${imgSrc}" 
                  title="${studentName}" 
@@ -146,4 +144,3 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("All students rendered.");
   }
 });
-
