@@ -133,11 +133,11 @@ document.addEventListener("DOMContentLoaded", () => {
             imgFile = `images/${student.imgstudent}`;
           }
         } else {
-          imgFile = "picture/default.jpg";
+          imgFile = "img/default.jpg";
           isDefaultImage = true;
         }
 
-        if (imgFile === "picture/default.jpg") {
+        if (imgFile === "img/default.jpg") {
           isDefaultImage = true;
         }
 
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         el.innerHTML = `
           <div class="portfolio-content h-100">
             <img src="${imgFile}" class="img-fluid student-img" alt="${studentName}" 
-                 onerror="this.onerror=null;this.src='picture/default.jpg';">
+                 onerror="this.onerror=null;this.src='img/default.jpg';">
             <div class="portfolio-info">
               <h4>${studentName}</h4>
               <p>Class: ${student.class ?? "N/A"}, Roll No: ${student.rollno ?? "N/A"}</p>
@@ -204,3 +204,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 });
+
