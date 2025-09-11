@@ -128,9 +128,9 @@ document.addEventListener("DOMContentLoaded", () => {
           ? student.imgstudent.startsWith("data:image/")
             ? student.imgstudent
             : `images/${student.imgstudent}`
-          : "img/image.jpg";
+          : "img/test.jpg";
 
-        const isDefaultImage = imgFile === "img/image.jpg";
+        const isDefaultImage = imgFile === "img/test.jpg";
 
         const el = document.createElement("div");
         el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
@@ -200,4 +200,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 });
+
 
