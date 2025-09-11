@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
       el.innerHTML = `
         <div class="portfolio-content h-100">
           <img src="${imgFile}" class="img-fluid student-img" alt="${studentName}" 
-               onerror="this.onerror=null;this.src='images/default.png';">
+               onerror="this.onerror=null;this.src='images/default.jpg';">
           <div class="portfolio-info">
             <h4>${studentName}</h4>
             <p>Class: ${student.class ?? "N/A"}, Roll No: ${student.rollno ?? "N/A"}</p>
@@ -178,4 +178,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 });
+
 
