@@ -105,7 +105,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // Rendering
   // ------------------------------
   function renderAllStudents() {
+    // Destroy previous Isotope instance before clearing container
+    if (isoInstance) {
+      isoInstance.destroy();
+      isoInstance = null;
+    }
+
     container.innerHTML = "";
+
+    console.log("Rendering", studentsCache.length, "students");
 
     const elements = studentsCache.map(student => {
       const safeClass = (student.class || "unknown")
@@ -114,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const studentName =
         window.DataHandler?.capitalize(student.student) ?? student.student;
 
-      // ✅ Handle base64, file name, or fallback
+      // Handle base64, file name, or fallback image
       let imgFile;
       if (student.imgstudent && student.imgstudent.trim()) {
         if (student.imgstudent.startsWith("data:image/")) {
@@ -126,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
         imgFile = "images/default.jpg";
       }
 
-      // ✅ Create HTML block
       const el = document.createElement("div");
       el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
       el.innerHTML = `
@@ -153,13 +160,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     container.append(...elements);
 
-    // Setup Isotope layout
+    // Initialize Isotope layout after appending
     isoInstance = new Isotope(container, {
       itemSelector: ".portfolio-item",
       layoutMode: "fitRows"
     });
 
-    // Setup GLightbox
+    // Setup GLightbox (destroy previous instance first)
     if (window._glightboxInstance) window._glightboxInstance.destroy();
     window._glightboxInstance = GLightbox({ selector: ".glightbox" });
   }
