@@ -114,10 +114,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const studentName =
         window.DataHandler?.capitalize(student.student) ?? student.student;
 
-      const imgFile = student.imgstudent && student.imgstudent.trim()
-        ? `images/${student.imgstudent}`
-        : "images/default.jpg"; // ✅ fallback image
+      // ✅ Handle base64, file name, or fallback
+      let imgFile;
+      if (student.imgstudent && student.imgstudent.trim()) {
+        if (student.imgstudent.startsWith("data:image/")) {
+          imgFile = student.imgstudent;
+        } else {
+          imgFile = `images/${student.imgstudent}`;
+        }
+      } else {
+        imgFile = "images/default.jpg";
+      }
 
+      // ✅ Create HTML block
       const el = document.createElement("div");
       el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
       el.innerHTML = `
@@ -129,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>Class: ${student.class ?? "N/A"}, Roll No: ${student.rollno ?? "N/A"}</p>
             ${
               student.imgstudent && student.imgstudent.trim()
-                ? `<a href="images/${student.imgstudent}" title="${studentName}" 
+                ? `<a href="${imgFile}" title="${studentName}" 
                     data-gallery="portfolio-gallery-student" 
                     class="glightbox preview-link">
                   <i class="bi bi-zoom-in"></i>
@@ -178,5 +187,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 });
-
-
