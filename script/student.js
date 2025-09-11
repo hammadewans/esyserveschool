@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function renderAll() {
     console.log("Rendering all students...");
     container.innerHTML = "";
-
+    console.log(studentsCache);
     studentsCache.forEach(student => {
       const studentName = window.DataHandler.capitalize(student.student ?? "Unknown");
       const studentClass = window.DataHandler.capitalize(student.class ?? "Unknown");
@@ -146,3 +146,4 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("All students rendered.");
   }
 });
+
