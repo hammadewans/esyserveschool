@@ -158,8 +158,17 @@ document.addEventListener("DOMContentLoaded", function () {
             <h4>${studentName}</h4>
             <p>Class: ${studentClass} - Section ${studentSection}, Roll No: ${studentRoll}</p>
             <div>
-              <a href="${imgSrc}" title="${studentName}" data-gallery="portfolio-gallery-${filterClass}" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-              <a href="student-details.html?studentid=${student.studentid}" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
+              <a href="${imgSrc}" 
+                 title="${studentName}" 
+                 data-gallery="portfolio-gallery-${filterClass}" 
+                 class="glightbox preview-link">
+                 <i class="bi bi-zoom-in"></i>
+              </a>
+              <a href="student-details.html?studentid=${student.studentid}" 
+                 title="More Details" 
+                 class="details-link">
+                 <i class="bi bi-link-45deg"></i>
+              </a>
             </div>
           </div>
         </div>
