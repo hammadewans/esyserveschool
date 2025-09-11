@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("Initializing IndexedDB...");
 
+  // ------------------------------
   // IndexedDB Helpers
   function openDB() {
     return new Promise((resolve, reject) => {
@@ -74,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ------------------------------
   // Fetch Students from Server
   async function fetchStudentsFromServer() {
     try {
@@ -98,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ------------------------------
   // Rendering
   async function renderAllStudents() {
     if (renderingLock) {
@@ -112,55 +115,48 @@ document.addEventListener("DOMContentLoaded", () => {
         isoInstance = null;
       }
 
-      container.innerHTML = ""; // Clear content first
+      container.innerHTML = ""; // Clear container first
 
       console.log("Rendering", studentsCache.length, "students");
 
       const elements = studentsCache.map(student => {
-        const safeClass = (student.class || "unknown")
-          .replace(/\s+/g, "-")
-          .toLowerCase();
-        const studentName =
-          window.DataHandler?.capitalize(student.student) ?? student.student;
+        const safeClass = (student.class || "unknown").replace(/\s+/g, "-").toLowerCase();
+        const studentName = window.DataHandler?.capitalize(student.student) ?? student.student;
 
-        let imgFile;
-        let isDefaultImage = false;
+        // Determine image
+        let imgFile = student.imgstudent && student.imgstudent.trim()
+          ? student.imgstudent.startsWith("data:image/")
+            ? student.imgstudent
+            : `images/${student.imgstudent}`
+          : "img/default.jpg";
 
-        if (student.imgstudent && student.imgstudent.trim()) {
-          if (student.imgstudent.startsWith("data:image/")) {
-            imgFile = student.imgstudent;
-          } else {
-            imgFile = `images/${student.imgstudent}`;
-          }
-        } else {
-          imgFile = "img/default.jpg";
-          isDefaultImage = true;
-        }
-
-        if (imgFile === "img/default.jpg") {
-          isDefaultImage = true;
-        }
+        const isDefaultImage = imgFile === "img/default.jpg";
 
         const el = document.createElement("div");
         el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
         el.innerHTML = `
           <div class="portfolio-content h-100">
-            <img src="${imgFile}" class="img-fluid student-img" alt="${studentName}" 
-                 onerror="this.onerror=null;this.src='img/default.jpg';">
+            <img src="${imgFile}" class="img-fluid student-img" alt="${studentName}">
             <div class="portfolio-info">
               <h4>${studentName}</h4>
               <p>Class: ${student.class ?? "N/A"}, Roll No: ${student.rollno ?? "N/A"}</p>
               ${
                 !isDefaultImage
                   ? `<a href="${imgFile}" title="${studentName}" 
-                      data-gallery="portfolio-gallery-student" 
-                      class="glightbox preview-link">
-                    <i class="bi bi-zoom-in"></i>
-                  </a>`
+                       data-gallery="portfolio-gallery-student" 
+                       class="glightbox preview-link">
+                       <i class="bi bi-zoom-in"></i>
+                     </a>`
                   : `<span class="text-muted">No image available</span>`
               }
             </div>
-          </div>`;
+          </div>
+        `;
+
+        // Re-layout Isotope after image load
+        el.querySelector("img").addEventListener("load", () => {
+          if (isoInstance) isoInstance.layout();
+        });
 
         return el;
       });
@@ -179,7 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Init
+  // ------------------------------
+  // Initialization
   (async function init() {
     await openDB();
 
@@ -193,7 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
         saveStudents(freshStudents);
       }
     } else {
-      // We have data in IndexedDB, so skip fetching
       console.log("Using cached students, skipping server fetch");
     }
 
@@ -204,4 +200,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 });
-
