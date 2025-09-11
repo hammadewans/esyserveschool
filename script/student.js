@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let db;
   let studentsCache = [];
   let isoInstance;
+  let renderingLock = false; // Prevent overlapping renders
 
   console.log("Initializing IndexedDB...");
 
@@ -98,79 +99,84 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Rendering
-  function renderAllStudents() {
-    if (isoInstance) {
-      isoInstance.destroy();
-      isoInstance = null;
+  async function renderAllStudents() {
+    if (renderingLock) {
+      console.log("Render locked to prevent overlap");
+      return;
     }
+    renderingLock = true;
 
-    container.innerHTML = "";
+    try {
+      if (isoInstance) {
+        isoInstance.destroy();
+        isoInstance = null;
+      }
 
-    console.log("Rendering", studentsCache.length, "students");
+      container.innerHTML = ""; // Clear content first
 
-    const elements = studentsCache.map(student => {
-      const safeClass = (student.class || "unknown")
-        .replace(/\s+/g, "-")
-        .toLowerCase();
-      const studentName =
-        window.DataHandler?.capitalize(student.student) ?? student.student;
+      console.log("Rendering", studentsCache.length, "students");
 
-      // Determine image source:
-      // If imgstudent starts with 'data:image/', treat as base64
-      // Else if imgstudent is filename, use images/ folder
-      // Else fallback to default
-      let imgFile;
-      let isDefaultImage = false;
+      const elements = studentsCache.map(student => {
+        const safeClass = (student.class || "unknown")
+          .replace(/\s+/g, "-")
+          .toLowerCase();
+        const studentName =
+          window.DataHandler?.capitalize(student.student) ?? student.student;
 
-      if (student.imgstudent && student.imgstudent.trim()) {
-        if (student.imgstudent.startsWith("data:image/")) {
-          imgFile = student.imgstudent;
+        let imgFile;
+        let isDefaultImage = false;
+
+        if (student.imgstudent && student.imgstudent.trim()) {
+          if (student.imgstudent.startsWith("data:image/")) {
+            imgFile = student.imgstudent;
+          } else {
+            imgFile = `images/${student.imgstudent}`;
+          }
         } else {
-          imgFile = `images/${student.imgstudent}`;
+          imgFile = "images/default.jpg";
+          isDefaultImage = true;
         }
-      } else {
-        imgFile = "images/default.jpg";
-        isDefaultImage = true;
-      }
 
-      // Also mark default if imgFile is exactly default.jpg path
-      if (imgFile === "images/default.jpg") {
-        isDefaultImage = true;
-      }
+        if (imgFile === "images/default.jpg") {
+          isDefaultImage = true;
+        }
 
-      const el = document.createElement("div");
-      el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
-      el.innerHTML = `
-        <div class="portfolio-content h-100">
-          <img src="${imgFile}" class="img-fluid student-img" alt="${studentName}" 
-               onerror="this.onerror=null;this.src='images/default.jpg';">
-          <div class="portfolio-info">
-            <h4>${studentName}</h4>
-            <p>Class: ${student.class ?? "N/A"}, Roll No: ${student.rollno ?? "N/A"}</p>
-            ${
-              !isDefaultImage
-                ? `<a href="${imgFile}" title="${studentName}" 
-                    data-gallery="portfolio-gallery-student" 
-                    class="glightbox preview-link">
-                  <i class="bi bi-zoom-in"></i>
-                </a>`
-                : `<span class="text-muted">No image available</span>`
-            }
-          </div>
-        </div>`;
+        const el = document.createElement("div");
+        el.className = `col-lg-4 col-md-6 portfolio-item filter-${safeClass}`;
+        el.innerHTML = `
+          <div class="portfolio-content h-100">
+            <img src="${imgFile}" class="img-fluid student-img" alt="${studentName}" 
+                 onerror="this.onerror=null;this.src='images/default.jpg';">
+            <div class="portfolio-info">
+              <h4>${studentName}</h4>
+              <p>Class: ${student.class ?? "N/A"}, Roll No: ${student.rollno ?? "N/A"}</p>
+              ${
+                !isDefaultImage
+                  ? `<a href="${imgFile}" title="${studentName}" 
+                      data-gallery="portfolio-gallery-student" 
+                      class="glightbox preview-link">
+                    <i class="bi bi-zoom-in"></i>
+                  </a>`
+                  : `<span class="text-muted">No image available</span>`
+              }
+            </div>
+          </div>`;
 
-      return el;
-    });
+        return el;
+      });
 
-    container.append(...elements);
+      container.append(...elements);
 
-    isoInstance = new Isotope(container, {
-      itemSelector: ".portfolio-item",
-      layoutMode: "fitRows"
-    });
+      isoInstance = new Isotope(container, {
+        itemSelector: ".portfolio-item",
+        layoutMode: "fitRows"
+      });
 
-    if (window._glightboxInstance) window._glightboxInstance.destroy();
-    window._glightboxInstance = GLightbox({ selector: ".glightbox" });
+      if (window._glightboxInstance) window._glightboxInstance.destroy();
+      window._glightboxInstance = GLightbox({ selector: ".glightbox" });
+    } finally {
+      renderingLock = false;
+    }
   }
 
   // Init
@@ -188,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (studentsCache.length) {
-      renderAllStudents();
+      await renderAllStudents();
     } else {
       container.innerHTML = `<p class="text-danger">⚠️ No student data available.</p>`;
     }
