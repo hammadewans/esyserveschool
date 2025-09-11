@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       console.log(`✅ Fetched ${data.length} students`);
+      console.log(data);
       return data;
     } catch (err) {
       console.error("❌ Fetch error:", err);
@@ -161,3 +162,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 });
+
