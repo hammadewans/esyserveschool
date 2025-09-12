@@ -220,5 +220,5 @@ document.addEventListener("DOMContentLoaded", function () {
       // fallback to fetch
       await fetchFromBackend();
     }
-  })();
-});
+  })(); // boot sequence end
+}); // DOMContentLoaded end
