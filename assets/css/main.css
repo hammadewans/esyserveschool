@@ -553,12 +553,14 @@ section,
   transition: 0.3s;
 }
 
+/* Always show portfolio info */
 .portfolio .portfolio-content .portfolio-info {
-  opacity: 0;
+  opacity: 1 !important;
+  visibility: visible !important;
   position: absolute;
   inset: 0;
   z-index: 3;
-  transition: all ease-in-out 0.3s;
+  transition: none !important; /* remove fade effect */
   background: rgba(0, 0, 0, 0.6);
   padding: 15px;
   display: flex;
@@ -602,13 +604,16 @@ section,
   line-height: 0;
 }
 
+/* Remove hover-only visibility */
 .portfolio .portfolio-content:hover .portfolio-info {
-  opacity: 1;
+  opacity: 1 !important;
 }
 
+/* Keep zoom effect on hover */
 .portfolio .portfolio-content:hover img {
   transform: scale(1.1);
 }
+
 
 /*--------------------------------------------------------------
 # Clients Section
