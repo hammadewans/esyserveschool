@@ -4,44 +4,84 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>EsyServe - Students</title>
+  <title>EsyServe</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
 
+  <!-- Favicons -->
   <link href="assets/img/fevicon.png" rel="icon">
   <link href="assets/img/fevicon.png" rel="apple-touch-icon">
 
-  <!-- Fonts + Vendor CSS -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: MyPortfolio
+  * Template URL: https://bootstrapmade.com/myportfolio-bootstrap-portfolio-website-template/
+  * Updated: Aug 08 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
 </head>
 
 <body class="portfolio-page">
 
   <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+    <div class="container-fluid  position-relative d-flex align-items-center justify-content-between">
+
       <a href="javascript:void(0)" class="logo d-flex align-items-center">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
         <img src="assets/img/fevicon.png" alt="Logo">
         <h1 class="sitename">EsyServe</h1>
       </a>
+
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li class="dropdown"><a href="index.html"><span>Profile</span></a></li>
-          <li class="dropdown"><a href="javascript:void(0)"><span>Student</span></a></li>
-          <li class="dropdown"><a href="teacher.html"><span>Teacher</span></a></li>
+          <li class="dropdown"><a href="index.html"><span>Profile</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="editprofile.html">Edit Profile</a></li>
+              <li><a href="imgschool.html">Change School Image</a></li>
+              <li><a href="imglogo.html">Change Logo Image</a></li>
+              <li class="dropdown"><a href="imgsignature.html"><span>Change Signature</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                <ul>
+                  <li><a href="signature.html">Signature Pad</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li class="dropdown"><a href="javascript:void(0)"><span>Student</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="addstudent.html">Add Student</a></li>
+            </ul>
+          </li>
+          <li class="dropdown"><a href="teacher.html"><span>Teacher</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="addteacher.html">Add Teacher</a></li>
+            </ul>
+          </li>
           <li><a href="template.html">Templates</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
+
     </div>
   </header>
 
   <main class="main">
+
+    <!-- Page Title -->
     <div class="page-title light-background">
       <div class="container">
         <h1>Student</h1>
@@ -52,57 +92,74 @@
           </ol>
         </nav>
       </div>
-    </div>
+    </div><!-- End Page Title -->
 
+    <!-- Portfolio Section -->
     <section id="portfolio" class="portfolio section">
+
       <div class="container">
+
         <div class="isotope-layout" data-default-filter="*" data-layout="masonry" data-sort="original-order">
-          <div class="row align-items-center mb-3">
-            <div class="col-lg-8">
+
+          <div class="row align-items-center">
+            <div class="col-lg-5 text-center text-lg-end">
               <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="100">
                 <li data-filter="*" class="filter-active">All</li>
-                <li data-filter=".play">Play</li>
-                <li data-filter=".nursery">Nursery</li>
-                <li data-filter=".lkg">LKG</li>
-                <li data-filter=".ukg">UKG</li>
-                <!-- numeric classes use 'n' prefix to keep selectors valid -->
-                <li data-filter=".n1">1<sup>st</sup></li>
-                <li data-filter=".n2">2<sup>nd</sup></li>
-                <li data-filter=".n3">3<sup>rd</sup></li>
-                <li data-filter=".n4">4<sup>th</sup></li>
-                <li data-filter=".n5">5<sup>th</sup></li>
-                <li data-filter=".n6">6<sup>th</sup></li>
-                <li data-filter=".n7">7<sup>th</sup></li>
-                <li data-filter=".n8">8<sup>th</sup></li>
-                <li data-filter=".n9">9<sup>th</sup></li>
-                <li data-filter=".n10">10<sup>th</sup></li>
-                <li data-filter=".n11">11<sup>th</sup></li>
-                <li data-filter=".n12">12<sup>th</sup></li>
-              </ul>
+                <li data-filter=".filter-nursery">Nursery</li>
+                <li data-filter=".filter-lkg">LKG</li>
+                <li data-filter=".filter-ukg">UKG</li>
+                <li data-filter=".filter-1">1<sup>st</sup> </li>
+                <li data-filter=".filter-2">2<sup>nd</sup> </li>
+                <li data-filter=".filter-3">3<sup>rd</sup> </li>
+                <li data-filter=".filter-4">4<sup>th</sup> </li>
+                <li data-filter=".filter-5">5<sup>th</sup> </li>
+                <li data-filter=".filter-6">6<sup>th</sup> </li>
+                <li data-filter=".filter-7">7<sup>th</sup> </li>
+                <li data-filter=".filter-8">8<sup>th</sup> </li>
+                <li data-filter=".filter-9">9<sup>th</sup> </li>
+                <li data-filter=".filter-10">10<sup>th</sup> </li>
+                <li data-filter=".filter-11">11<sup>th</sup> </li>
+                <li data-filter=".filter-12">12<sup>th</sup> </li>
+              </ul><!-- End Portfolio Filters -->
             </div>
           </div>
 
-          <div class="row gy-4 isotope-container" id="portfolio-container" data-aos="fade-up" data-aos-delay="200">
-            <!-- JS will populate student cards here -->
-          </div>
+          <div class="row gy-4 isotope-container" id="portfolio-container" data-aos="fade-up" data-aos-delay="200" style="position: relative; height: 1344px;">
+
+          </div><!-- End Portfolio Container -->
+
         </div>
+
       </div>
-    </section>
+
+    </section><!-- /Portfolio Section -->
+
   </main>
 
   <footer id="footer" class="footer light-background">
+
     <div class="container">
       <div class="copyright text-center ">
-        <p>© <strong class="px-1 sitename">EsyServe</strong> All Rights Reserved</p>
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">EsyServe</strong> <span>All Rights Reserved</span></p>
       </div>
       <div class="social-links d-flex justify-content-center">
         <a href="https://instagram.com/esy_serve" target="_blank"><i class="bi bi-instagram"></i></a>
         <a href="https://youtube.com/@esyserve" target="_blank"><i class="bi bi-youtube"></i></a>
       </div>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+      </div>
     </div>
+
   </footer>
 
+  <!-- Scroll Top -->
   <a href="javascript:void(0)" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
   <div id="preloader"></div>
 
   <!-- Vendor JS Files -->
@@ -114,13 +171,10 @@
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
 
-  <!-- Main + DataHandler (optional) -->
+  <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
   <script src="src/DataHandler.js"></script>
-
-  <!-- Student logic -->
   <script src="script/student.js"></script>
 </body>
 
 </html>
-
