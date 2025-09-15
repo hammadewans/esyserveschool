@@ -5,10 +5,47 @@ document.addEventListener('DOMContentLoaded', function () {
   const validator = new FormValidator(form);
   const imgInput = form.querySelector('input[name="imgstudent"]');
 
-  // === Set default preview image ===
-  preview.src = 'assets/img/3x4.png'; // Optional: placeholder
+  preview.src = 'assets/img/3x4.png';
 
-  // === Image file input preview (3:4 crop) ===
+  let compressedBlob = null;
+
+  // === Compress image until < 200 KB ===
+  function compressToTarget(canvas, file, callback) {
+    let quality = 0.9;
+
+    function attempt() {
+      canvas.toBlob(
+        function (blob) {
+          if (blob.size <= 200 * 1024 || quality < 0.3) {
+            // success or too low quality
+            compressedBlob = new File([blob], file.name, { type: 'image/jpeg' });
+            callback(compressedBlob);
+            return;
+          }
+          quality -= 0.1; // lower quality step
+          canvas.toBlob(
+            function (retryBlob) {
+              blob = retryBlob;
+              if (blob.size <= 200 * 1024 || quality < 0.3) {
+                compressedBlob = new File([blob], file.name, { type: 'image/jpeg' });
+                callback(compressedBlob);
+              } else {
+                attempt();
+              }
+            },
+            'image/jpeg',
+            quality
+          );
+        },
+        'image/jpeg',
+        quality
+      );
+    }
+
+    attempt();
+  }
+
+  // === Image input preview & compression ===
   imgInput.addEventListener('change', function () {
     const file = imgInput.files[0];
     if (!file || !file.type.startsWith('image/')) return;
@@ -19,8 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
       img.onload = function () {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const targetWidth = 600;
-        const targetHeight = 800;
+        const targetWidth = 1200;
+        const targetHeight = 1600;
         canvas.width = targetWidth;
         canvas.height = targetHeight;
 
@@ -41,7 +78,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
-        preview.src = canvas.toDataURL('image/png');
+
+        // Update preview (initial high quality)
+        preview.src = canvas.toDataURL('image/jpeg', 0.9);
+
+        // Compress until <200 KB
+        compressToTarget(canvas, file, function (blob) {
+          console.log("✅ Final compressed size:", (blob.size / 1024).toFixed(1), "KB");
+        });
       };
       img.src = e.target.result;
     };
@@ -63,6 +107,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const formData = new FormData(form);
 
+    if (compressedBlob) {
+      formData.set('imgstudent', compressedBlob);
+    }
+
     (async function () {
       try {
         const response = await fetch('https://esyserve.top/add/student', {
@@ -81,10 +129,10 @@ document.addEventListener('DOMContentLoaded', function () {
           throw new Error('Something went wrong. Please try again later.');
         }
 
-        // === Success ===
         window.AlertHandler.show(result, 'success');
         form.reset();
-        preview.src = 'assets/img/3x4.png'; // Reset preview
+        preview.src = 'assets/img/3x4.png';
+        compressedBlob = null;
 
       } catch (error) {
         window.AlertHandler.show(error.message, 'error');
