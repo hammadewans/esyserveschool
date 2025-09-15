@@ -9,54 +9,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let compressedBlob = null;
 
-  // === Compress image until < 200 KB ===
-  function compressToTarget(canvas, file, callback) {
-    let quality = 0.9;
+  // === Compress image until < 200 KB (Promise-based) ===
+  function compressToTarget(canvas, file) {
+    return new Promise((resolve) => {
+      let quality = 0.9;
 
-    function attempt() {
-      canvas.toBlob(
-        function (blob) {
-          if (blob.size <= 200 * 1024 || quality < 0.3) {
-            // success or too low quality
-            compressedBlob = new File([blob], file.name, { type: 'image/jpeg' });
-            callback(compressedBlob);
-            return;
-          }
-          quality -= 0.1; // lower quality step
-          canvas.toBlob(
-            function (retryBlob) {
-              blob = retryBlob;
-              if (blob.size <= 200 * 1024 || quality < 0.3) {
-                compressedBlob = new File([blob], file.name, { type: 'image/jpeg' });
-                callback(compressedBlob);
-              } else {
-                attempt();
-              }
-            },
-            'image/jpeg',
-            quality
-          );
-        },
-        'image/jpeg',
-        quality
-      );
-    }
+      function attempt() {
+        canvas.toBlob(
+          function (blob) {
+            if (blob.size <= 200 * 1024 || quality < 0.3) {
+              compressedBlob = new File([blob], file.name, { type: 'image/jpeg' });
+              resolve(compressedBlob);
+              return;
+            }
+            quality -= 0.1;
+            attempt();
+          },
+          'image/jpeg',
+          quality
+        );
+      }
 
-    attempt();
+      attempt();
+    });
   }
 
   // === Image input preview & compression ===
-  imgInput.addEventListener('change', function () {
+  imgInput.addEventListener('change', async function () {
     const file = imgInput.files[0];
     if (!file || !file.type.startsWith('image/')) return;
 
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = async function (e) {
       const img = new Image();
-      img.onload = function () {
+      img.onload = async function () {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const targetWidth = 1200;
+        const targetWidth = 1200; // 3:4 ratio
         const targetHeight = 1600;
         canvas.width = targetWidth;
         canvas.height = targetHeight;
@@ -79,13 +68,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
 
-        // Update preview (initial high quality)
+        // Preview before compression
         preview.src = canvas.toDataURL('image/jpeg', 0.9);
 
-        // Compress until <200 KB
-        compressToTarget(canvas, file, function (blob) {
-          console.log("✅ Final compressed size:", (blob.size / 1024).toFixed(1), "KB");
-        });
+        // Compress and save blob
+        compressedBlob = await compressToTarget(canvas, file);
+        console.log("✅ Final compressed size:", (compressedBlob.size / 1024).toFixed(1), "KB");
       };
       img.src = e.target.result;
     };
@@ -93,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // === Form submission ===
-  button.addEventListener('click', function () {
+  button.addEventListener('click', async function () {
     window.ButtonController.disable(button);
 
     const error = validator.validate();
@@ -106,6 +94,49 @@ document.addEventListener('DOMContentLoaded', function () {
     window.DataHandler.trimForm(form);
 
     const formData = new FormData(form);
+
+    // If image is selected but not compressed yet → compress now
+    if (imgInput.files[0] && !compressedBlob) {
+      const file = imgInput.files[0];
+      const img = new Image();
+      const reader = new FileReader();
+
+      await new Promise((resolve) => {
+        reader.onload = async function (e) {
+          img.onload = async function () {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const targetWidth = 600;
+            const targetHeight = 800;
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+
+            const srcAspect = img.width / img.height;
+            const targetAspect = targetWidth / targetHeight;
+
+            let sx, sy, sw, sh;
+            if (srcAspect > targetAspect) {
+              sw = img.height * targetAspect;
+              sh = img.height;
+              sx = (img.width - sw) / 2;
+              sy = 0;
+            } else {
+              sw = img.width;
+              sh = img.width / targetAspect;
+              sx = 0;
+              sy = (img.height - sh) / 2;
+            }
+
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
+
+            compressedBlob = await compressToTarget(canvas, file);
+            resolve();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
 
     if (compressedBlob) {
       formData.set('imgstudent', compressedBlob);
