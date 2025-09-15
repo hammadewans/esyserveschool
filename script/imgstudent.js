@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function () {
       img.onload = function () {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const targetWidth = 1200;  // 3:4 ratio
-        const targetHeight = 1600;
+        const targetWidth = 600;  // 3:4 ratio
+        const targetHeight = 800;
         canvas.width = targetWidth;
         canvas.height = targetHeight;
 
@@ -154,3 +154,4 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 });
+
