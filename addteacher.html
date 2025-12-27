@@ -200,19 +200,15 @@
                     </div>
 
                     <div class="col-md-6">
-                    <select
+                      <input type="text"
                       class="form-control"
                       id="role"
                       name="role"
+                      placeholder="Enter role"
                       data-required="true"
-                    >
-                      <option value="" disabled selected>Select Role</option>
-                      <option value="principal">Principal</option>
-                      <option value="vice principal`">Vice Principal`</option>
-                      <option value="manager">Manager</option>
-                      <option value="p t">P.T.</option>
-                      <option value="teacher">Teacher</option>
-                    </select>
+                      data-pattern="^[a-zA-Z0-9\s,.-]+$"
+                      data-error="Role: Role is required"
+                      />
                   </div>
 
 
@@ -283,4 +279,5 @@
 
 
 </html>
+
 
