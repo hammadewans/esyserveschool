@@ -5,8 +5,6 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>EsyServe</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
 
   <!-- Favicons -->
   <link href="assets/img/fevicon.png" rel="icon">
@@ -26,171 +24,157 @@
 
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: MyPortfolio
-  * Template URL: https://bootstrapmade.com/myportfolio-bootstrap-portfolio-website-template/
-  * Updated: Aug 08 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
 </head>
 
 <body class="starter-page-page">
 
-  <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container-fluid  position-relative d-flex align-items-center justify-content-between">
+<header id="header" class="header d-flex align-items-center sticky-top">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
 
-      <a href="javascript:void(0)" class="logo d-flex align-items-center">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <img src="assets/img/fevicon.png" alt="Logo">
-        <h1 class="sitename">EsyServe</h1>
-      </a>
+    <a href="javascript:void(0)" class="logo d-flex align-items-center">
+      <img src="assets/img/fevicon.png" alt="Logo">
+      <h1 class="sitename">EsyServe</h1>
+    </a>
 
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li class="dropdown"><a href="index.html"><span>Profile</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="editprofile.html">Edit Profile</a></li>
-              <li><a href="imgschool.html">Change School Image</a></li>
-              <li><a href="imglogo.html">Change Logo Image</a></li>
-              <li class="dropdown"><a href="imgsignature.html"><span>Change Signature</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="signature.html">Signature Pad</a></li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-          <li class="dropdown"><a href="student.html"><span>Student</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="addstudent.html">Add Student</a></li>
-            </ul>
-          </li>
-          <li class="dropdown"><a href="teacher.html"><span>Teacher</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="addteacher.html">Add Teacher</a></li>
-            </ul>
-          </li>
-          <li><a href="template.html">Templates</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
+    <nav id="navmenu" class="navmenu">
+      <ul>
+        <li class="dropdown">
+          <a href="index.html"><span>Profile</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <ul>
+            <li><a href="editprofile.html">Edit Profile</a></li>
+            <li><a href="imgschool.html">Change School Image</a></li>
+            <li><a href="imglogo.html">Change Logo Image</a></li>
+            <li class="dropdown">
+              <a href="imgsignature.html"><span>Change Signature</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+              <ul>
+                <li><a href="signature.html">Signature Pad</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
 
-    </div>
-  </header>
+        <li class="dropdown">
+          <a href="student.html"><span>Student</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <ul>
+            <li><a href="addstudent.html">Add Student</a></li>
+          </ul>
+        </li>
 
-  <main class="main">
+        <li class="dropdown">
+          <a href="teacher.html"><span>Teacher</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <ul>
+            <li><a href="addteacher.html">Add Teacher</a></li>
+          </ul>
+        </li>
 
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container">
-        <h1>Teacher Image</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="javascript:void(0)">Home</a></li>
-            <li class="current">Image Upload</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
+        <li><a href="template.html">Templates</a></li>
+      </ul>
 
-    <section class="about section">
+      <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+    </nav>
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+  </div>
+</header>
 
-        <div class="row gy-4 justify-content-center">
-          <div class="col-lg-4">
-            <img src="" class="img-fluid" alt="Teacher Image" id="imgteacherPreview">
-          </div>
-        </div>
+<main class="main">
 
-      </div>
-
-    </section><!-- /About Section -->
-
-      <section class="contact section">
-
-        <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
-
-          <div class="row gy-4">
-
-            <div class="col-lg-7">
-              <form class="php-email-form" data-aos="fade-up" data-aos-delay="500" id="imgteacherForm" novalidate>
-                <div class="row gy-4">
-
-                  <div class="col-md-6">
-                    <input type="file"
-                    id="imgteacher"
-                    name="imgteacher"
-                    accept="image/*"
-                    class="form-control"
-                    data-required="true"
-                    capture="enviroment"
-                    />
-                  </div>
-
-                  <div class="col-md-12 text-center">
-                    <button type="button" id="imgteacherButton">
-                      Upload Image
-                    </button>
-                  </div>
-
-                </div>
-              </form>
-            </div><!-- End Contact Form -->
-
-          </div>
-
-        </div>
-
-      </section><!-- /Contact Section -->
-
-  </main>
-
-   <footer id="footer" class="footer light-background">
-
+  <!-- Page Title -->
+  <div class="page-title light-background">
     <div class="container">
-      <div class="copyright text-center ">
-        <p>© <span>Copyright</span> <strong class="px-1 sitename">EsyServe</strong> <span>All Rights Reserved</span></p>
-      </div>
-      <div class="social-links d-flex justify-content-center">
-        <a href="https://instagram.com/esy_serve" target="_blank"><i class="bi bi-instagram"></i></a>
-        <a href="https://youtube.com/@esyserve" target="_blank"><i class="bi bi-youtube"></i></a>
-      </div>
-      <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you've purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+      <h1>Teacher Image</h1>
+      <nav class="breadcrumbs">
+        <ol>
+          <li><a href="javascript:void(0)">Home</a></li>
+          <li class="current">Image Upload</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Preview Section -->
+  <section class="about section">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="row gy-4 justify-content-center">
+        <div class="col-lg-4">
+          <img src="" class="img-fluid" alt="Teacher Image" id="imgteacherPreview">
+        </div>
       </div>
     </div>
+  </section>
 
-  </footer>
+  <!-- Upload Form -->
+  <section class="contact section">
+    <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
+      <div class="row gy-4">
+        <div class="col-lg-7">
 
-  <!-- Scroll Top -->
-  <a href="javascript:void(0)" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+          <form class="php-email-form" id="imgteacherForm" novalidate>
+            <div class="row gy-4">
 
-  <!-- Preloader -->
-  <div id="preloader"></div>    
+              <div class="col-md-6">
+                <input
+                  type="file"
+                  id="imgteacher"
+                  name="imgteacher"
+                  accept="image/*"
+                  class="form-control"
+                  data-required="true"
+                  capture="enviroment"
+                />
+              </div>
 
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
-  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+              <div class="col-md-12 text-center">
+                <button type="button" id="imgteacherButton">
+                  Upload Image
+                </button>
+              </div>
 
-  <!-- Main JS File -->
-  <script src="assets/js/main.js"></script>
-  <script src="src/PasswordToggler.js"></script>
-  <script src="src/FormValidator.js"></script>
-  <script src="src/ErrorHandler.js"></script>
-  <script src="src/DataHandler.js"></script>
-  <script src="src/ButtonController.js"></script>
-  <script src="script/imgteacher.js"></script>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="footer" class="footer light-background">
+  <div class="container">
+    <div class="copyright text-center">
+      <p>© <strong class="sitename">EsyServe</strong> All Rights Reserved</p>
+    </div>
+
+    <div class="social-links d-flex justify-content-center">
+      <a href="https://instagram.com/esy_serve" target="_blank"><i class="bi bi-instagram"></i></a>
+      <a href="https://youtube.com/@esyserve" target="_blank"><i class="bi bi-youtube"></i></a>
+    </div>
+  </div>
+</footer>
+
+<a href="javascript:void(0)" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
+  <i class="bi bi-arrow-up-short"></i>
+</a>
+
+<div id="preloader"></div>
+
+<!-- Vendor JS -->
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/aos/aos.js"></script>
+<script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+<script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+<script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+<!-- Core JS -->
+<script src="assets/js/main.js"></script>
+<script src="src/FormValidator.js"></script>
+<script src="src/ErrorHandler.js"></script>
+<script src="src/DataHandler.js"></script>
+<script src="src/ButtonController.js"></script>
+
+<!-- Page JS -->
+<script src="script/imgteacher.js"></script>
+
 </body>
-
-
 </html>
