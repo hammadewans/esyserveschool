@@ -5,22 +5,46 @@ document.addEventListener('DOMContentLoaded', function () {
   const validator = new FormValidator(form);
   const imgInput = form.querySelector('input[name="imgteacher"]');
 
-  // === Set default preview image ===
-  preview.src = 'assets/img/3x4.png'; // Default placeholder for 5:4 or adjust as needed
+  preview.src = 'assets/img/3x4.png';
 
-  // === Image file input preview (5:4 crop) ===
-  imgInput.addEventListener('change', function () {
-    const file = imgInput.files[0];
-    if (!file || !file.type.startsWith('image/')) return;
+  let compressedBlob = null;
+  let lastFile = null;
 
+  // === Compress image until <= 200 KB ===
+  function compressToTarget(canvas, file, callback) {
+    let quality = 0.9;
+
+    function attempt() {
+      canvas.toBlob(
+        function (blob) {
+          if (blob.size <= 200 * 1024 || quality < 0.3) {
+            compressedBlob = new File([blob], file.name, { type: 'image/jpeg' });
+            callback(compressedBlob);
+            return;
+          }
+          quality -= 0.1;
+          attempt();
+        },
+        'image/jpeg',
+        quality
+      );
+    }
+
+    attempt();
+  }
+
+  // === Process and compress image ===
+  function processImage(file, callback) {
     const reader = new FileReader();
     reader.onload = function (e) {
       const img = new Image();
       img.onload = function () {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const targetWidth = 600; // 5:4 ratio (1000x800)
-        const targetHeight = 800;
+
+        const targetWidth = 600;   // SAME AS STUDENT
+        const targetHeight = 800;  // 3:4 ratio
+
         canvas.width = targetWidth;
         canvas.height = targetHeight;
 
@@ -29,13 +53,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let sx, sy, sw, sh;
         if (srcAspect > targetAspect) {
-          // source is wider than target
           sw = img.height * targetAspect;
           sh = img.height;
           sx = (img.width - sw) / 2;
           sy = 0;
         } else {
-          // source is taller than target
           sw = img.width;
           sh = img.width / targetAspect;
           sx = 0;
@@ -43,11 +65,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
-        preview.src = canvas.toDataURL('image/png');
+
+        // Preview
+        preview.src = canvas.toDataURL('image/jpeg', 0.9);
+
+        // Compress
+        compressToTarget(canvas, file, function (blob) {
+          console.log("✅ Teacher image compressed:", (blob.size / 1024).toFixed(1), "KB");
+          callback(blob);
+        });
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
+  }
+
+  // === On image select ===
+  imgInput.addEventListener('change', function () {
+    const file = imgInput.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+
+    lastFile = file;
+    processImage(file, function (blob) {
+      compressedBlob = blob;
+    });
   });
 
   // === Form submission ===
@@ -73,35 +114,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const formData = new FormData(form);
 
-    (async function () {
-      try {
-        const response = await fetch(`https://esyserve.top/imgteacher/upload/${teacherId}`, {
-          method: 'POST',
-          credentials: 'include',
-          body: formData
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          if (response.status < 500) {
-            throw new Error(result || 'Invalid input provided.');
-          }
-          console.error(result);
-          throw new Error('Something went wrong. Please try again later.');
-        }
-
-        // Success
-        window.AlertHandler.show(result, 'success');
-        form.reset();
-        setTimeout(() => {
-          window.location.href = `teacher-details.html?teacherid=${teacherId}`;
-        }, 2000);
-      } catch (error) {
-        window.AlertHandler.show(error.message, 'error');
-      } finally {
-        window.ButtonController.enable(button);
-      }
-    })();
+    // Ensure compression before upload
+    if (lastFile) {
+      processImage(lastFile, function (blob) {
+        formData.set('imgteacher', blob);
+        uploadForm(formData, teacherId);
+      });
+    } else {
+      uploadForm(formData, teacherId);
+    }
   });
+
+  // === Upload function ===
+  async function uploadForm(formData, teacherId) {
+    try {
+      const response = await fetch(`https://esyserve.top/imgteacher/upload/${teacherId}`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (response.status < 500) {
+          throw new Error(result || 'Invalid input provided.');
+        }
+        console.error(result);
+        throw new Error('Something went wrong. Please try again later.');
+      }
+
+      window.AlertHandler.show(result, 'success');
+      form.reset();
+
+      setTimeout(() => {
+        window.location.href = `teacher-details.html?teacherid=${teacherId}`;
+      }, 2000);
+
+    } catch (error) {
+      window.AlertHandler.show(error.message, 'error');
+    } finally {
+      window.ButtonController.enable(button);
+    }
+  }
 });
