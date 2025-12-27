@@ -3,6 +3,7 @@ const editprofileButton = document.getElementById('editteacherButton');
 const validator = new FormValidator(form);
 
 editprofileButton.addEventListener('click', function () {
+
   const params = new URLSearchParams(window.location.search);
   const teacherId = params.get("teacherid");
 
@@ -27,7 +28,7 @@ editprofileButton.addEventListener('click', function () {
 
   (async function () {
     try {
-      const response = await fetch(`https://esyserve.top/edit/teacher/${encodeURIComponent(teacherId)}`, {
+      const response = await fetch(`https://esyserve.top/edit/teacher/${teacherId}`, {
         method: 'POST',
         credentials: 'include',
         body: formData
@@ -49,8 +50,9 @@ editprofileButton.addEventListener('click', function () {
       // Success
       window.AlertHandler.show(responseData, 'success');
       form.reset();
+
       setTimeout(() => {
-        window.location.href = `teacher-details.html?teacherid=${encodeURIComponent(teacherId)}`;
+        window.location.href = `teacher-details.html?teacherid=${teacherId}`;
       }, 2000);
 
     } catch (error) {
