@@ -69,6 +69,7 @@ export default async function Teachers(teacherId) {
 
     const dob = el('input', 'form-control');
     dob.placeholder = 'DD/MM/YYYY';
+    dob.inputMode = 'numeric';
     dob.value = teacherData.dob
         ? new Date(teacherData.dob).toLocaleDateString('en-GB')
         : '';
