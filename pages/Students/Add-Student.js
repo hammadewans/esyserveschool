@@ -65,7 +65,7 @@ export default function Students() {
     const fatherName = el('input', 'form-control'); fatherName.placeholder='Father Name';
     const motherName = el('input', 'form-control'); motherName.placeholder='Mother Name';
     const rollNo = el('input', 'form-control'); rollNo.type='number'; rollNo.placeholder='Roll No';
-    const dob = el('input', 'form-control'); dob.placeholder='DD/MM/YYYY'; dob.maxLength=10;
+    const dob = el('input', 'form-control'); dob.placeholder='DD/MM/YYYY'; dob.inputMode = 'numeric'; dob.maxLength=10;
     dob.addEventListener('input', e=>{
         let v=e.target.value.replace(/\D/g,'').slice(0,8);
         if(v.length>=5) v=`${v.slice(0,2)}/${v.slice(2,4)}/${v.slice(4)}`;
