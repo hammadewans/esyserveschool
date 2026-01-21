@@ -105,7 +105,7 @@ hint.style.borderTop = '1px solid rgba(0,0,0,0.1)'; // optional subtle separator
     imgInput.type = 'file';
     imgInput.accept = 'image/*';
     imgInput.id = 'imgInput';
-    ImgInput.capture = 'enviroment'
+    ImgInput.capture = 'environment'
 
     /* ===== BUTTON ===== */
     const btn = el('button', 'btn btn-primary w-100 mt-3');
