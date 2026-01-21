@@ -103,6 +103,7 @@ export default async function Teachers(teacherId) {
     imgInput.type = 'file';
     imgInput.accept = 'image/*';
     imgInput.id = 'imgInput';
+    ImgInput.capture = 'environment';
 
     /* ===== BUTTON ===== */
     const btn = el('button', 'btn btn-primary w-100 mt-3');
