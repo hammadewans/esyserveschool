@@ -122,7 +122,7 @@ export default function AutoLoginGenerate() {
 
             const payload = { email, password, exp, aud: 'esyserve-autologin' };
             const base64 = btoa(JSON.stringify(payload));
-            const link = `https://esyserveschool.onrender.com/#/auto-generate/${base64}`;
+            const link = `https://esyserveschool.onrender.com/#/auto-login/${base64}`;
 
             linkInput.value = link;
             resultBox.classList.remove('d-none');
