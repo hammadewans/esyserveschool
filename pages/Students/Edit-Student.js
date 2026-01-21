@@ -80,6 +80,7 @@ export default async function Students(studentId) {
     rollNo.value = studentData?.rollno ?? '';
 
     const dob = el('input', 'form-control');
+    dob.inputMode = 'numeric';
     dob.value = studentData?.dob
         ? new Date(studentData.dob).toLocaleDateString('en-GB')
         : '';
