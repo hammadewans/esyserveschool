@@ -36,8 +36,7 @@ export default function ProductsIdCard(productId) {
     img.src = product.image;
     img.className = "card-img-top";
     img.alt = product.name;
-    // Remove cursor zoom
-    img.style.cursor = "default";
+    img.style.cursor = "default"; // no zoom
 
     imgCard.appendChild(img);
     colImg.appendChild(imgCard);
@@ -53,6 +52,24 @@ export default function ProductsIdCard(productId) {
     const rating = document.createElement('div');
     rating.className = "text-warning mb-3";
     rating.innerHTML = "★★★★★ <span class='text-muted'>(5.0)</span>";
+
+    // ===== Countdown Timer Box =====
+    const countdownBox = document.createElement('div');
+    countdownBox.className = "d-flex justify-content-between align-items-center border rounded p-2 mb-3 bg-light";
+    countdownBox.style.fontFamily = "monospace";
+    countdownBox.style.fontWeight = "bold";
+    countdownBox.style.fontSize = "0.9rem";
+    countdownBox.style.color = "#dc3545"; // Bootstrap danger color
+
+    const daysBox = document.createElement('div');
+    const hoursBox = document.createElement('div');
+    const minsBox = document.createElement('div');
+    const secsBox = document.createElement('div');
+
+    [daysBox, hoursBox, minsBox, secsBox].forEach(box => {
+        box.className = "text-center flex-fill";
+        countdownBox.appendChild(box);
+    });
 
     // ===== Variant Buttons =====
     const variantWrapper = document.createElement('div');
@@ -71,19 +88,40 @@ export default function ProductsIdCard(productId) {
     stockLabel.style.color = activeVariant.inStock ? "green" : "red";
     stockLabel.innerText = activeVariant.inStock ? "In Stock" : "Out of Stock";
 
-    // ===== Update Price & Stock =====
+    // ===== Update Price & Countdown & Stock =====
     function updatePrice(variant) {
-        const activePrice = variant.pricing.discountPrice || variant.pricing.originalPrice;
-        const originalPrice = variant.pricing.originalPrice;
+        const now = new Date();
+        const offerEnd = new Date(product.offerEndsAt);
+        const isOfferActive = now < offerEnd;
 
-        priceBox.innerHTML = ""; // Clear before updating
+        // Countdown
+        if (isOfferActive) {
+            if (!countdownBox.parentElement) {
+                colDetails.insertBefore(countdownBox, variantWrapper);
+            }
+            updateCountdown();
+            if (!window.countdownInterval) {
+                window.countdownInterval = setInterval(updateCountdown, 1000);
+            }
+        } else {
+            if (countdownBox.parentElement) countdownBox.parentElement.removeChild(countdownBox);
+            if (window.countdownInterval) {
+                clearInterval(window.countdownInterval);
+                window.countdownInterval = null;
+            }
+        }
+
+        const activePrice = isOfferActive ? variant.pricing.discountPrice : variant.pricing.originalPrice;
+        const originalPrice = isOfferActive ? variant.pricing.originalPrice : null;
+
+        priceBox.innerHTML = ""; // clear before update
 
         const priceEl = document.createElement('span');
         priceEl.className = "h3 fw-bold text-success";
         priceEl.innerText = `₹${activePrice}`;
         priceBox.appendChild(priceEl);
 
-        if (originalPrice && originalPrice > activePrice) {
+        if (isOfferActive && originalPrice > activePrice) {
             const originalEl = document.createElement('span');
             originalEl.className = "text-decoration-line-through text-danger ms-2";
             originalEl.innerText = `₹${originalPrice}`;
@@ -99,6 +137,32 @@ export default function ProductsIdCard(productId) {
         // Update stock
         stockLabel.style.color = variant.inStock ? "green" : "red";
         stockLabel.innerText = variant.inStock ? "In Stock" : "Out of Stock";
+    }
+
+    function updateCountdown() {
+        const now = new Date();
+        const offerEnd = new Date(product.offerEndsAt);
+        const diff = offerEnd - now;
+
+        if (diff <= 0) {
+            if (countdownBox.parentElement) countdownBox.parentElement.removeChild(countdownBox);
+            if (window.countdownInterval) {
+                clearInterval(window.countdownInterval);
+                window.countdownInterval = null;
+            }
+            updatePrice(activeVariant);
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        daysBox.innerHTML = `${days.toString().padStart(2,'0')}<br><small>Days</small>`;
+        hoursBox.innerHTML = `${hours.toString().padStart(2,'0')}<br><small>Hours</small>`;
+        minsBox.innerHTML = `${minutes.toString().padStart(2,'0')}<br><small>Minutes</small>`;
+        secsBox.innerHTML = `${seconds.toString().padStart(2,'0')}<br><small>Seconds</small>`;
     }
 
     // ===== Create Variant Buttons =====
@@ -174,7 +238,7 @@ export default function ProductsIdCard(productId) {
     specWrapper.appendChild(specTitle);
     specWrapper.appendChild(specList);
 
-    // ===== Append all right column elements =====
+    // ===== Append right column =====
     colDetails.appendChild(title);
     colDetails.appendChild(rating);
     colDetails.appendChild(variantWrapper);
