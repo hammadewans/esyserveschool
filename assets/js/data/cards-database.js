@@ -4,7 +4,7 @@ export const cardsDatabase = {
     idCards: [
         {
             id: "card-1",
-            name: "Slide Card",
+            name: "Standard Slide Card",
             description: "High-quality ID card made with 700 micron NTR sheet and 100 GSM lamination. Includes durable plastic slide  holder and 38-inch lanyard. Suitable for schools and offices.",
             specifications: {
                 Material: "NTR Sheet",
@@ -32,7 +32,7 @@ export const cardsDatabase = {
         },
         {
             id: "card-2",
-            name: "Pasting Card",
+            name: "Standard Pasting Card",
             description: "Reliable standard ID card with 700 micron NTR sheet and 100 GSM lamination. Comes with sturdy plastic pasting holder and 38-inch lanyard. Ideal for offices, schools and events.",
             specifications: {
                 Material: "NTR Sheet",
@@ -60,7 +60,7 @@ export const cardsDatabase = {
         },
         {
             id: "card-3",
-            name: "Deluxe Slide ID Card",
+            name: "Super Deluxe Slide ID Card",
             description: "Elegant deluxe ID card with 700 micron NTR sheet and 100 GSM lamination. Includes premium slide holder and 38-inch lanyard. Perfect for corporate events.",
             specifications: {
                 Material: "NTR Sheet",
@@ -88,7 +88,7 @@ export const cardsDatabase = {
         },
         {
             id: "card-4",
-            name: "Eco ID Card",
+            name: "Deluxe Slide ID Card",
             description: "Eco-friendly ID card made with recycled 700 micron NTR sheet and 100 GSM lamination. Includes biodegradable slide holder and 38-inch lanyard.",
             specifications: {
                 Material: "Recycled NTR Sheet",
@@ -116,7 +116,7 @@ export const cardsDatabase = {
         },
         {
             id: "card-5",
-            name: "Student ID Card",
+            name: "Super Durable Pouch ID Card",
             description: "Durable student ID card with 200 micron photo paper without lamination. Comes with strong pouch holder and 38-inch lanyard. Ideal for schools and colleges.",
             specifications: {
                 Material: "Photo Paper",
@@ -144,7 +144,7 @@ export const cardsDatabase = {
         },
         {
             id: "card-6",
-            name: "Corporate ID Card",
+            name: "Durable Slide ID Card",
             description: "Professional corporate ID card with 700 micron NTR sheet and 100 GSM lamination double side. Features a premium double side slide holder and 38-inch lanyard.",
             specifications: {
                 Material: "NTR Sheet",
@@ -172,7 +172,7 @@ export const cardsDatabase = {
         },
         {
             id: "card-7",
-            name: "Visitor ID Card",
+            name: "Super Premium Pouch ID Card",
             description: "Secure Fully PackedID card with 200 micron photo paper without lamination. Includes premium double case pouch holder and 38-inch lanyard.",
             specifications: {
                 Material: "Photo Paper",
@@ -200,7 +200,7 @@ export const cardsDatabase = {
         },
         {
             id: "card-8",
-            name: "Event ID Card",
+            name: "Premium Pouch ID Card",
             description: "Special event ID card with 200 micron photo paper without lamination. Comes with stylish single case pouch holder and 38-inch lanyard.",
             specifications: {
                 Material: "Photo Paper",
@@ -228,7 +228,7 @@ export const cardsDatabase = {
         },
         {
             id: "card-9",
-            name: "VIP ID Card",
+            name: "VIP Pouch ID Card",
             description: "Exclusive VIP ID card with 200 micron photo paper without lamination. Comes with Luxury Plastic glass acrlylic pouch Holder and 38-inch lanyard.",
             specifications: {
                 Material: "Photo Paper",
@@ -256,7 +256,7 @@ export const cardsDatabase = {
         },
         {
             id: "card-10",
-            name: "Custom ID Card",
+            name: "Super VIP Acrylic ID Card",
             description: "Fully customizable ID card with acrylic material with customizable shape & design. Choose your  lanyard. Suitable for offices, schools, and events.",
             specifications: {
                 Material: "Acrylic",
