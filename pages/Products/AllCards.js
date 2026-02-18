@@ -8,8 +8,12 @@ export default function ProductsIdCard() {
     showLoader();
 
     const products = cardsDatabase.idCards; // multiple products
+
     const container = document.createElement('div');
-    container.className = "container py-3 d-flex flex-wrap justify-content-center gap-3";
+    container.className = "container py-3";
+
+    const row = document.createElement('div');
+    row.className = "row";
 
     products.forEach(product => {
 
@@ -38,15 +42,13 @@ export default function ProductsIdCard() {
 
         const priceData = getActivePrice(product, variant);
 
-        // ===== Card Wrapper =====
+        // ===== Card Column Wrapper (Responsive) =====
         const cardWrapper = document.createElement('div');
-        cardWrapper.className = "position-relative";
-        cardWrapper.style.maxWidth = "320px";
-        cardWrapper.style.width = "100%";
+        cardWrapper.className = "col-12 col-sm-6 col-lg-4 mb-3";
 
         // ===== Card =====
         const card = document.createElement('div');
-        card.className = "card shadow-sm mt-0";
+        card.className = "card shadow-sm mt-0 h-100";
         card.style.cursor = "pointer";
         card.onclick = () => {
             window.location.hash = `/card-details/:${product.id}`;
@@ -101,9 +103,11 @@ export default function ProductsIdCard() {
         card.appendChild(cardBody);
 
         cardWrapper.appendChild(card);
-        container.appendChild(cardWrapper);
+        row.appendChild(cardWrapper);
     });
 
+    container.appendChild(row);
     app.appendChild(container);
-    hideLoader(); // hide loader immediately
+
+    hideLoader();
 }
