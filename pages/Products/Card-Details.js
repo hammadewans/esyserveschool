@@ -7,6 +7,9 @@ export default function ProductsIdCard(productId) {
 
     showLoader();
 
+    // ✅ FIX: local interval (freeze issue solved)
+    let countdownInterval = null;
+
     const id = productId?.replace(/^:/, "") || "";
     const product = cardsDatabase.idCards.find(p => p.id === id);
 
@@ -156,14 +159,14 @@ export default function ProductsIdCard(productId) {
                 container.insertBefore(countdownBox, row);
             }
             updateCountdown();
-            if (!window.countdownInterval) {
-                window.countdownInterval = setInterval(updateCountdown, 1000);
+            if (!countdownInterval) {
+                countdownInterval = setInterval(updateCountdown, 1000);
             }
         } else {
             if (countdownBox.parentElement) countdownBox.parentElement.removeChild(countdownBox);
-            if (window.countdownInterval) {
-                clearInterval(window.countdownInterval);
-                window.countdownInterval = null;
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
             }
         }
 
@@ -201,9 +204,9 @@ export default function ProductsIdCard(productId) {
 
         if (diff <= 0) {
             if (countdownBox.parentElement) countdownBox.parentElement.removeChild(countdownBox);
-            if (window.countdownInterval) {
-                clearInterval(window.countdownInterval);
-                window.countdownInterval = null;
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
             }
             updatePrice(activeVariant);
             return;
@@ -271,7 +274,6 @@ export default function ProductsIdCard(productId) {
     desc.className = "mb-3";
     desc.innerText = product.description;
 
-    // ===== FIXED RESPONSIVE SPECIFICATIONS =====
     const specWrapper = document.createElement('div');
     specWrapper.className = "mb-4";
 
