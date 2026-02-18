@@ -25,7 +25,86 @@ export default function ProductsIdCard(productId) {
     const row = document.createElement('div');
     row.className = "row";
 
-    // ===== Left: Image (no zoom modal) =====
+    // ===== ATTRACTIVE CENTERED OFFER BANNER =====
+    const countdownBox = document.createElement('div');
+    countdownBox.className = "w-100 mb-3";
+    countdownBox.style.background = "linear-gradient(135deg,#fff5f5,#ffeaea)";
+    countdownBox.style.border = "1px solid #ffd6d6";
+    countdownBox.style.borderRadius = "12px";
+    countdownBox.style.padding = "14px 16px";
+    countdownBox.style.display = "flex";
+    countdownBox.style.flexDirection = "column";
+    countdownBox.style.alignItems = "center";
+    countdownBox.style.justifyContent = "center";
+    countdownBox.style.gap = "12px";
+    countdownBox.style.textAlign = "center";
+    countdownBox.style.boxShadow = "0 6px 18px rgba(220,53,69,0.08)";
+
+    const leftText = document.createElement('div');
+    leftText.style.background = "linear-gradient(45deg,#ff4d4d,#dc3545)";
+    leftText.style.color = "#fff";
+    leftText.style.fontSize = "0.8rem";
+    leftText.style.fontWeight = "700";
+    leftText.style.padding = "6px 16px";
+    leftText.style.borderRadius = "50px";
+    leftText.style.letterSpacing = "0.5px";
+    leftText.style.boxShadow = "0 4px 10px rgba(220,53,69,0.25)";
+    leftText.innerHTML = "🔥 LIMITED TIME OFFER 🔥";
+
+    const timerWrapper = document.createElement('div');
+    timerWrapper.style.display = "flex";
+    timerWrapper.style.alignItems = "center";
+    timerWrapper.style.justifyContent = "center";
+    timerWrapper.style.gap = "10px";
+    timerWrapper.style.flexWrap = "wrap";
+
+    function createBox(labelText) {
+        const box = document.createElement('div');
+        box.style.background = "#ffffff";
+        box.style.border = "1px solid #ffc9c9";
+        box.style.borderRadius = "10px";
+        box.style.padding = "8px 10px";
+        box.style.minWidth = "58px";
+        box.style.display = "flex";
+        box.style.flexDirection = "column";
+        box.style.alignItems = "center";
+        box.style.justifyContent = "center";
+        box.style.boxShadow = "0 4px 10px rgba(0,0,0,0.05)";
+
+        const value = document.createElement('div');
+        value.style.fontSize = "1rem";
+        value.style.fontWeight = "800";
+        value.style.color = "#dc3545";
+        value.style.lineHeight = "1";
+
+        const label = document.createElement('div');
+        label.style.fontSize = "0.6rem";
+        label.style.fontWeight = "600";
+        label.style.color = "#6c757d";
+        label.style.marginTop = "4px";
+        label.style.letterSpacing = "1px";
+        label.innerText = labelText;
+
+        box.appendChild(value);
+        box.appendChild(label);
+
+        return { box, value };
+    }
+
+    const daysObj = createBox("DAYS");
+    const hoursObj = createBox("HRS");
+    const minsObj = createBox("MIN");
+    const secsObj = createBox("SEC");
+
+    timerWrapper.appendChild(daysObj.box);
+    timerWrapper.appendChild(hoursObj.box);
+    timerWrapper.appendChild(minsObj.box);
+    timerWrapper.appendChild(secsObj.box);
+
+    countdownBox.appendChild(leftText);
+    countdownBox.appendChild(timerWrapper);
+
+    // ===== LEFT IMAGE =====
     const colImg = document.createElement('div');
     colImg.className = "col-md-6 mb-3";
 
@@ -36,12 +115,11 @@ export default function ProductsIdCard(productId) {
     img.src = product.image;
     img.className = "card-img-top";
     img.alt = product.name;
-    img.style.cursor = "default"; // no zoom
 
     imgCard.appendChild(img);
     colImg.appendChild(imgCard);
 
-    // ===== Right: Details =====
+    // ===== RIGHT DETAILS =====
     const colDetails = document.createElement('div');
     colDetails.className = "col-md-6";
 
@@ -53,25 +131,6 @@ export default function ProductsIdCard(productId) {
     rating.className = "text-warning mb-3";
     rating.innerHTML = "★★★★★ <span class='text-muted'>(5.0)</span>";
 
-    // ===== Countdown Timer Box =====
-    const countdownBox = document.createElement('div');
-    countdownBox.className = "d-flex justify-content-between align-items-center border rounded p-2 mb-3 bg-light";
-    countdownBox.style.fontFamily = "monospace";
-    countdownBox.style.fontWeight = "bold";
-    countdownBox.style.fontSize = "0.9rem";
-    countdownBox.style.color = "#dc3545"; // Bootstrap danger color
-
-    const daysBox = document.createElement('div');
-    const hoursBox = document.createElement('div');
-    const minsBox = document.createElement('div');
-    const secsBox = document.createElement('div');
-
-    [daysBox, hoursBox, minsBox, secsBox].forEach(box => {
-        box.className = "text-center flex-fill";
-        countdownBox.appendChild(box);
-    });
-
-    // ===== Variant Buttons =====
     const variantWrapper = document.createElement('div');
     variantWrapper.className = "mb-3 d-flex gap-2";
     variantWrapper.style.flexWrap = "nowrap";
@@ -81,23 +140,20 @@ export default function ProductsIdCard(productId) {
     const priceBox = document.createElement('div');
     priceBox.className = "mb-1 text-start";
 
-    // ===== Stock Label =====
     const stockLabel = document.createElement('div');
     stockLabel.className = "mb-3 fw-bold";
     stockLabel.style.fontSize = "0.9rem";
     stockLabel.style.color = activeVariant.inStock ? "green" : "red";
     stockLabel.innerText = activeVariant.inStock ? "In Stock" : "Out of Stock";
 
-    // ===== Update Price & Countdown & Stock =====
     function updatePrice(variant) {
         const now = new Date();
         const offerEnd = new Date(product.offerEndsAt);
         const isOfferActive = now < offerEnd;
 
-        // Countdown
         if (isOfferActive) {
             if (!countdownBox.parentElement) {
-                colDetails.insertBefore(countdownBox, variantWrapper);
+                container.insertBefore(countdownBox, row);
             }
             updateCountdown();
             if (!window.countdownInterval) {
@@ -114,7 +170,7 @@ export default function ProductsIdCard(productId) {
         const activePrice = isOfferActive ? variant.pricing.discountPrice : variant.pricing.originalPrice;
         const originalPrice = isOfferActive ? variant.pricing.originalPrice : null;
 
-        priceBox.innerHTML = ""; // clear before update
+        priceBox.innerHTML = "";
 
         const priceEl = document.createElement('span');
         priceEl.className = "h3 fw-bold text-success";
@@ -134,7 +190,6 @@ export default function ProductsIdCard(productId) {
             priceBox.appendChild(discountEl);
         }
 
-        // Update stock
         stockLabel.style.color = variant.inStock ? "green" : "red";
         stockLabel.innerText = variant.inStock ? "In Stock" : "Out of Stock";
     }
@@ -159,13 +214,13 @@ export default function ProductsIdCard(productId) {
         const minutes = Math.floor((diff / (1000 * 60)) % 60);
         const seconds = Math.floor((diff / 1000) % 60);
 
-        daysBox.innerHTML = `${days.toString().padStart(2,'0')}<br><small>Days</small>`;
-        hoursBox.innerHTML = `${hours.toString().padStart(2,'0')}<br><small>Hours</small>`;
-        minsBox.innerHTML = `${minutes.toString().padStart(2,'0')}<br><small>Minutes</small>`;
-        secsBox.innerHTML = `${seconds.toString().padStart(2,'0')}<br><small>Seconds</small>`;
+        daysObj.value.innerText = days.toString().padStart(2,'0');
+        hoursObj.value.innerText = hours.toString().padStart(2,'0');
+        minsObj.value.innerText = minutes.toString().padStart(2,'0');
+        secsObj.value.innerText = seconds.toString().padStart(2,'0');
     }
 
-    // ===== Create Variant Buttons =====
+    // ===== VARIANTS =====
     product.variants.forEach((v, index) => {
         const label = document.createElement('label');
         label.className = "btn btn-light border d-flex flex-column align-items-start p-2";
@@ -185,14 +240,11 @@ export default function ProductsIdCard(productId) {
         const spanVariant = document.createElement('span');
         spanVariant.className = "text-muted fw-bold";
         spanVariant.style.fontSize = "0.65rem";
-        spanVariant.style.textTransform = "uppercase";
-        spanVariant.style.marginBottom = "1px";
         spanVariant.innerText = "Variant";
 
         const spanSize = document.createElement('span');
         spanSize.className = "fw-bold";
         spanSize.style.fontSize = "0.95rem";
-        spanSize.style.marginBottom = "1px";
         spanSize.innerText = v.lanyardType.toUpperCase();
 
         const spanExtra = document.createElement('span');
@@ -219,26 +271,66 @@ export default function ProductsIdCard(productId) {
     desc.className = "mb-3";
     desc.innerText = product.description;
 
+    // ===== FIXED RESPONSIVE SPECIFICATIONS =====
     const specWrapper = document.createElement('div');
-    specWrapper.className = "border p-3 rounded mb-3 bg-light";
+    specWrapper.className = "mb-4";
 
     const specTitle = document.createElement('h5');
-    specTitle.className = "fw-bold mb-2";
-    specTitle.innerText = "Specifications";
+    specTitle.className = "fw-bold mb-3";
+    specTitle.style.fontSize = "1.1rem";
+    specTitle.innerText = "Product Specifications";
 
-    const specList = document.createElement('ul');
-    specList.className = "list-unstyled mb-0";
+    const specCard = document.createElement('div');
+    specCard.style.background = "#ffffff";
+    specCard.style.borderRadius = "14px";
+    specCard.style.overflow = "hidden";
+    specCard.style.border = "1px solid #f1f1f1";
 
-    for (const [key, value] of Object.entries(product.specifications)) {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${key.replace(/([A-Z_])/g, ' $1')}:</strong> ${value}`;
-        specList.appendChild(li);
-    }
+    const specBody = document.createElement('div');
+    specBody.style.display = "flex";
+    specBody.style.flexDirection = "column";
 
+    Object.entries(product.specifications).forEach(([key, value], index) => {
+
+        const item = document.createElement('div');
+        item.style.padding = "14px 16px";
+        item.style.display = "flex";
+        item.style.flexDirection = "column";
+        item.style.gap = "4px";
+
+        if (index !== Object.keys(product.specifications).length - 1) {
+            item.style.borderBottom = "1px solid #f5f5f5";
+        }
+
+        const keySpan = document.createElement('div');
+        keySpan.style.fontSize = "0.8rem";
+        keySpan.style.fontWeight = "600";
+        keySpan.style.color = "#6c757d";
+        keySpan.innerText = key.replace(/([A-Z_])/g, ' $1');
+
+        const valueSpan = document.createElement('div');
+        valueSpan.style.fontSize = "0.95rem";
+        valueSpan.style.fontWeight = "700";
+        valueSpan.style.color = "#212529";
+        valueSpan.innerText = value;
+
+        item.appendChild(keySpan);
+        item.appendChild(valueSpan);
+
+        if (window.innerWidth >= 768) {
+            item.style.flexDirection = "row";
+            item.style.justifyContent = "space-between";
+            item.style.alignItems = "center";
+            valueSpan.style.textAlign = "right";
+        }
+
+        specBody.appendChild(item);
+    });
+
+    specCard.appendChild(specBody);
     specWrapper.appendChild(specTitle);
-    specWrapper.appendChild(specList);
+    specWrapper.appendChild(specCard);
 
-    // ===== Append right column =====
     colDetails.appendChild(title);
     colDetails.appendChild(rating);
     colDetails.appendChild(variantWrapper);
