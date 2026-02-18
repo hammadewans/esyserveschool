@@ -2,13 +2,13 @@
    Color Variables
    ========================= */
 :root {
-    --color-bg: #ffffff;          /* Body background */
-    --color-text: #333333;        /* Main text */
-    --color-primary: #4a90e2;     /* Primary theme color */
-    --color-secondary: #50e3c2;   /* Secondary color / accents */
-    --color-muted: #777777;       /* Muted text / placeholders */
-    --color-border: #e0e0e0;      /* Borders / dividers */
-    --color-hover: #e6f0ff;       /* Hover background for buttons / links */
+    --color-bg: #ffffff;
+    --color-text: #333333;
+    --color-primary: #4a90e2;
+    --color-secondary: #50e3c2;
+    --color-muted: #777777;
+    --color-border: #e0e0e0;
+    --color-hover: #e6f0ff;
 }
 
 /* =========================
@@ -24,6 +24,17 @@
     text-decoration: none;
     list-style: none;
     transition: all 0.3s ease;
+
+    /* Hide scrollbar (Firefox, IE, Edge) */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* Hide scrollbar (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    display: none;
 }
 
 /* =========================
@@ -37,29 +48,31 @@ body {
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow: auto; /* scrolling ON, scrollbar hidden */
 }
 
 /* =========================
    App container styles
    ========================= */
 #app {
-    max-width: 1400px;   /* good for desktop, avoids extra wide */
+    max-width: 1400px;
     margin: auto;
     width: 100%;
     padding-left: 16px;
     padding-right: 16px;
     box-sizing: border-box;
 }
+
 /* =========================
    Toast container styles
    ========================= */
 #toast-container {
-    position: fixed;       /* position-fixed */
-    top: 1rem;             /* top-0 + p-3 spacing */
-    right: 1rem;           /* end-0 + p-3 spacing */
-    display: flex;         /* d-flex */
-    flex-direction: column;/* flex-column */
-    gap: 0.5rem;           /* gap-2 equivalent */
-    z-index: 1080;         /* above everything */
-    max-width: 320px;      /* prevent too wide toasts */
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 1080;
+    max-width: 320px;
 }
