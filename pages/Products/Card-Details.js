@@ -138,6 +138,12 @@ export default function ProductsIdCard(productId) {
     variantWrapper.className = "mb-3 d-flex gap-2";
     variantWrapper.style.flexWrap = "nowrap";
 
+    // ✅ SCROLLABLE VARIANTS (ONLY ADDITION)
+    variantWrapper.style.overflowX = "auto";
+    variantWrapper.style.whiteSpace = "nowrap";
+    variantWrapper.style.scrollBehavior = "smooth";
+    variantWrapper.style.webkitOverflowScrolling = "touch";
+
     let activeVariant = product.variants[0];
 
     const priceBox = document.createElement('div');
@@ -229,6 +235,7 @@ export default function ProductsIdCard(productId) {
         label.className = "btn btn-light border d-flex flex-column align-items-start p-2";
         label.style.borderRadius = "0";
         label.style.minWidth = "80px";
+        label.style.flex = "0 0 auto"; // important for scroll
         if (index === 0) label.classList.add('active');
 
         const radio = document.createElement('input');
@@ -253,7 +260,7 @@ export default function ProductsIdCard(productId) {
         const spanExtra = document.createElement('span');
         spanExtra.className = "text-muted";
         spanExtra.style.fontSize = "0.65rem";
-        spanExtra.innerText = "Customizable Lanyard";
+        spanExtra.innerText = v.holderType.toUpperCase();
 
         label.appendChild(spanVariant);
         label.appendChild(spanSize);
