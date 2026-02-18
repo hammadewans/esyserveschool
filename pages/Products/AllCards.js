@@ -7,19 +7,19 @@ export default function ProductsIdCard() {
 
     showLoader();
 
-    const products = cardsDatabase.idCards; // multiple products
+    const products = cardsDatabase.idCards;
 
+    // ✅ container-fluid for proper mobile full width
     const container = document.createElement('div');
-    container.className = "container py-3";
+    container.className = "container-fluid px-2 py-3";
 
     const row = document.createElement('div');
-    row.className = "row";
+    row.className = "row g-3"; // responsive gap
 
     products.forEach(product => {
 
         const variant = product.variants[0];
 
-        // ===== Price Helper =====
         function getActivePrice(product, variant) {
             const now = new Date();
             const offerEnd = new Date(product.offerEndsAt);
@@ -42,29 +42,28 @@ export default function ProductsIdCard() {
 
         const priceData = getActivePrice(product, variant);
 
-        // ===== Card Column Wrapper (Responsive) =====
+        // ✅ Responsive Column
         const cardWrapper = document.createElement('div');
-        cardWrapper.className = "col-12 col-sm-6 col-lg-4 mb-3";
+        cardWrapper.className = "col-12 col-sm-6 col-lg-4";
 
-        // ===== Card =====
         const card = document.createElement('div');
-        card.className = "card shadow-sm mt-0 h-100";
+        card.className = "card shadow-sm h-100 w-100";
         card.style.cursor = "pointer";
         card.onclick = () => {
             window.location.hash = `/card-details/:${product.id}`;
         };
 
-        // ===== Image =====
+        // ✅ Responsive Image
         const img = document.createElement('img');
         img.src = product.image;
-        img.className = "card-img-top";
+        img.className = "card-img-top img-fluid";
         img.alt = product.name;
+        img.style.objectFit = "cover";
+        img.style.width = "100%";
 
-        // ===== Card Body =====
         const cardBody = document.createElement('div');
         cardBody.className = "card-body p-2";
 
-        // ===== Discount Badge =====
         if (priceData.isDiscount) {
             const discountPercent = Math.round(
                 ((priceData.originalPrice - priceData.price) / priceData.originalPrice) * 100
@@ -75,17 +74,14 @@ export default function ProductsIdCard() {
             card.appendChild(badge);
         }
 
-        // ===== Title =====
         const title = document.createElement('h6');
         title.className = "card-title mb-1";
         title.innerText = product.name;
 
-        // ===== Rating =====
         const rating = document.createElement('div');
         rating.className = "text-warning small mb-1";
         rating.innerHTML = "★★★★★ <span class='text-muted'>(5.0)</span>";
 
-        // ===== Price =====
         const priceBox = document.createElement('div');
         if (priceData.isDiscount) {
             priceBox.innerHTML = `<span class="fw-bold">₹${priceData.price}</span> 
@@ -94,7 +90,6 @@ export default function ProductsIdCard() {
             priceBox.innerHTML = `<span class="fw-bold">₹${priceData.price}</span>`;
         }
 
-        // ===== Append =====
         cardBody.appendChild(title);
         cardBody.appendChild(rating);
         cardBody.appendChild(priceBox);
