@@ -14,7 +14,7 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Non Print Lanyard",
             },
             image: "assets/images/card1.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
@@ -42,7 +42,7 @@ export const cardsDatabase = {
                 Lanyard_type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card2.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
@@ -70,7 +70,7 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card3.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
@@ -98,7 +98,7 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card4.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
@@ -126,7 +126,7 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card5.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
@@ -154,7 +154,7 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card6.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
@@ -182,7 +182,7 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card7.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
@@ -210,7 +210,7 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card8.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
@@ -238,7 +238,7 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card9.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
@@ -266,7 +266,7 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card10.jpg",
-            offerEndsAt: "2027-01-01T00:00:00",
+            offerEndsAt: "2026-11-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
