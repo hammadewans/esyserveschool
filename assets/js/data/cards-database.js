@@ -14,17 +14,19 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Non Print Lanyard",
             },
             image: "assets/images/card1.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 14, discountPrice: 11 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Single Side Card",   
                     pricing: { originalPrice: 15, discountPrice: 12 },
                     inStock: true
                 }
@@ -42,17 +44,19 @@ export const cardsDatabase = {
                 Lanyard_type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card2.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 19, discountPrice: 16 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 20, discountPrice: 17 },
                     inStock: true
                 }
@@ -70,17 +74,19 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card3.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 19, discountPrice: 16 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 20, discountPrice: 17 },
                     inStock: true
                 }
@@ -98,17 +104,19 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card4.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 19, discountPrice: 16 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 20, discountPrice: 17 },
                     inStock: true
                 }
@@ -126,18 +134,34 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card5.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 19, discountPrice: 16 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 20, discountPrice: 17 },
+                    inStock: true
+                },
+                {
+                    variantId: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 21, discountPrice: 18 },
+                    inStock: true
+                },
+                {
+                    variantId: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 22, discountPrice: 19 },
                     inStock: true
                 }
             ]
@@ -154,17 +178,19 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card6.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Double Side Card",
                     pricing: { originalPrice: 23, discountPrice: 20 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Double Side Card",
                     pricing: { originalPrice: 24, discountPrice: 21 },
                     inStock: true
                 }
@@ -182,18 +208,34 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card7.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 25, discountPrice: 22 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 26, discountPrice: 23 },
+                    inStock: true
+                },
+                {
+                    variantId: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 27, discountPrice: 24 },
+                    inStock: true
+                },
+                {
+                    variantId: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 28, discountPrice: 25 },
                     inStock: true
                 }
             ]
@@ -210,18 +252,34 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card8.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 22, discountPrice: 19 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 23, discountPrice: 20 },
+                    inStock: true
+                },
+                {
+                    variantId: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 24, discountPrice: 21 },
+                    inStock: true
+                },
+                {
+                    variantId: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 25, discountPrice: 22 },
                     inStock: true
                 }
             ]
@@ -238,20 +296,22 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card9.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 23, discountPrice: 20 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 24, discountPrice: 21 },
                     inStock: true
-                }
+                },
             ]
         },
         {
@@ -266,18 +326,34 @@ export const cardsDatabase = {
                 Lanyard_Type: "High Quality Digital Print Lanyard",
             },
             image: "assets/images/card10.jpg",
-            offerEndsAt: "2026-11-01T00:00:00",
+            offerEndsAt: "2026-09-01T00:00:00",
             variants: [
                 {
                     variantId: "16mm",
-                    lanyardType: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 33, discountPrice: 30 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
-                    lanyardType: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 34, discountPrice: 31 },
+                    inStock: true
+                },
+                {
+                    variantId: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 35, discountPrice: 32 },
+                    inStock: true
+                },
+                {
+                    variantId: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 36, discountPrice: 33 },
                     inStock: true
                 }
             ]
