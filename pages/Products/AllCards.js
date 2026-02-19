@@ -6,7 +6,6 @@ export default function ProductsIdCard() {
     app.innerHTML = '';
 
     showLoader();
-
     const products = cardsDatabase.idCards;
 
     // ✅ container-fluid for proper mobile full width
@@ -103,6 +102,54 @@ export default function ProductsIdCard() {
 
     container.appendChild(row);
     app.appendChild(container);
+
+    // ===== Friendly Shipping Guideline Box =====
+    const shippingBox = document.createElement('div');
+    shippingBox.style.background = '#fff7e6'; // soft orange/yellow
+    shippingBox.style.border = '1px solid #ffe5b4';
+    shippingBox.style.padding = '15px 20px';
+    shippingBox.style.borderRadius = '8px';
+    shippingBox.style.color = '#663c00';
+    shippingBox.style.fontFamily = 'Arial, sans-serif';
+    shippingBox.style.fontSize = '14px';
+    shippingBox.style.marginTop = '20px';
+
+    // Heading
+    const heading = document.createElement('strong');
+    heading.innerText = 'Shipping Guidelines / शिपिंग दिशानिर्देश:';
+    shippingBox.appendChild(heading);
+    shippingBox.appendChild(document.createElement('br'));
+
+    // Hindi sentence
+    const hindiText = document.createElement('span');
+    hindiText.innerText = '100 कार्ड से कम ऑर्डर करने पर, ';
+    shippingBox.appendChild(hindiText);
+
+    const hindiHighlight = document.createElement('strong');
+    hindiHighlight.innerText = 'शिपिंग में ₹200 अतिरिक्त हो सकता है';
+    shippingBox.appendChild(hindiHighlight);
+    shippingBox.appendChild(document.createTextNode('।'));
+    shippingBox.appendChild(document.createElement('br'));
+
+    // English sentence
+    const englishText = document.createElement('span');
+    englishText.innerText = 'For orders under 100 cards, ';
+    shippingBox.appendChild(englishText);
+
+    const englishHighlight = document.createElement('strong');
+    englishHighlight.innerText = 'an extra ₹200 may apply for shipping';
+    shippingBox.appendChild(englishHighlight);
+    shippingBox.appendChild(document.createTextNode('.'));
+    shippingBox.appendChild(document.createElement('br'));
+
+    // Recommendation
+    const recommendation = document.createElement('span');
+    recommendation.innerText = '(We recommend ordering 100 or more for faster and smoother shipping!)';
+    shippingBox.appendChild(recommendation);
+
+    // Append box at the end of page
+    app.appendChild(shippingBox);
+
 
     hideLoader();
 }
