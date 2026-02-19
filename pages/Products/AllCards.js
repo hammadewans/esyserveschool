@@ -126,7 +126,7 @@ export default function ProductsIdCard() {
     shippingBox.appendChild(hindiText);
 
     const hindiHighlight = document.createElement('strong');
-    hindiHighlight.innerText = 'शिपिंग में ₹200 अतिरिक्त हो सकता है';
+    hindiHighlight.innerText = 'शिपिंग में ₹200 अतिरिक्त लागू हो सकता है';
     shippingBox.appendChild(hindiHighlight);
     shippingBox.appendChild(document.createTextNode('।'));
     shippingBox.appendChild(document.createElement('br'));
