@@ -139,7 +139,7 @@ export default async function Home() {
                 'ID Card',
                 'Professional & Durable Identity Solutions',
                 '/assets/images/id-card.jpg',
-                '/#/products/allcards'
+                '#/products/allcards'
             ),
             createCategoryCard(
                 'Branding Polybag',
