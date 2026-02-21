@@ -19,7 +19,7 @@ export const polybagDatabase = {
             offerEndsAt: "2026-09-01T00:00:00",
             pricing: {
                 originalPrice: 14,
-                discountPrice: 9.5
+                discountPrice: 10
             },
             inStock: true
         },
@@ -41,7 +41,7 @@ export const polybagDatabase = {
             offerEndsAt: "2026-09-01T00:00:00",
             pricing: {
                 originalPrice: 15,
-                discountPrice: 10.5
+                discountPrice: 11
             },
             inStock: true
         }
