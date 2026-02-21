@@ -69,7 +69,7 @@ export default function Policy() {
             `
         },
         {
-            title: "7. Acrylic ID Card Delivery Time",
+            title: "7. Super VIP Acrylic ID Card Delivery Time",
             content: `
             <strong>English:</strong> Acrylic ID card orders will be delivered within 7 to 15 days depending on quantity.
             <br><br>
