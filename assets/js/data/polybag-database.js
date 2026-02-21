@@ -13,7 +13,7 @@ export const polybagDatabase = {
                 Printing: "School Name, Address & Custom Text Print",
                 Handle_Type: "Stitched Fabric Handle",
                 Eco_Friendly: "Reusable & Recyclable",
-                Color_Mode: "Single Color Printing"
+                Print_Mode: "Single Color Screen Print"
             },
             image: "assets/images/polybag14x18.png",
             offerEndsAt: "2026-09-01T00:00:00",
@@ -35,7 +35,7 @@ export const polybagDatabase = {
                 Printing: "School Name, Address & Custom Text Print",
                 Handle_Type: "Stitched Fabric Handle",
                 Eco_Friendly: "Reusable & Recyclable",
-                Color_Mode: "Single Color Printing"
+                Print_Mode: "Single Color Screen Print"
             },
             image: "assets/images/polybag16x20.png",
             offerEndsAt: "2026-09-01T00:00:00",
