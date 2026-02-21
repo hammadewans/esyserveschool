@@ -18,6 +18,10 @@ router.add('/', async () => {
     const page = await import('/pages/Home.js');
     return page.default();
 });
+router.add('/policy', async () => {
+    const page = await import('/pages/Policy/Policy.js');
+    return page.default();
+});
 router.add('/students', async () => {
     const page = await import('/pages/Students/Students.js');
     return page.default();
@@ -123,5 +127,10 @@ router.add('/products/allnotebooks', async () => {
 router.add('/card-details/:id', async (params) => {
     const { id } = params;
     const page = await import('/pages/Products/Card-Details.js');
+    return page.default(id);
+});
+router.add('/polybag-details/:id', async (params) => {
+    const { id } = params;
+    const page = await import('/pages/Products/Polybag-Details.js');
     return page.default(id);
 });
