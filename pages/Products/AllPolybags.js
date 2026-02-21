@@ -1,47 +1,116 @@
+import { showLoader, hideLoader } from '/assets/js/loader.js';
+import { polybagDatabase } from '/assets/js/data/polybag-database.js';
+
 export default function ProductsPolybag() {
     const app = document.getElementById('app');
-    app.innerHTML = ''; // Clear previous content
+    app.innerHTML = '';
 
-    // ===== Card-like container (small & narrow) =====
-    const card = document.createElement('div');
-    card.style.background = '#fff';
-    card.style.padding = '20px 15px';
-    card.style.borderRadius = '12px';
-    card.style.boxShadow = '0 6px 15px rgba(0,0,0,0.08)';
-    card.style.textAlign = 'center';
-    card.style.maxWidth = '400px'; // narrow card
-    card.style.width = '100%';
-    card.style.border = '2px dashed #ff9800';
-    card.style.margin = '50px auto 0 auto'; // top margin + horizontally centered
+    showLoader();
 
-    // ===== Emoji / Icon =====
-    const icon = document.createElement('div');
-    icon.style.fontSize = '40px';
-    icon.style.marginBottom = '15px';
-    icon.textContent = '🚧';
+    const products = polybagDatabase.polybags;
 
-    // ===== Heading =====
-    const heading = document.createElement('h2');
-    heading.style.fontSize = '24px';
-    heading.style.fontWeight = '700';
-    heading.style.marginBottom = '10px';
-    heading.style.color = '#333';
-    heading.textContent = 'Construction in Progress';
+    const container = document.createElement('div');
+    container.className = "container-fluid px-2 py-3";
 
-    // ===== Description =====
-    const description = document.createElement('p');
-    description.style.fontSize = '14px';
-    description.style.lineHeight = '1.5';
-    description.style.color = '#555';
-    description.innerHTML = `
-        We are working hard to bring you something amazing! <br>
-        This section is currently under construction. <br>
-        Please check back soon for new updates and features.
-    `;
+    const row = document.createElement('div');
+    row.className = "row g-3";
 
-    // ===== Append elements =====
-    card.appendChild(icon);
-    card.appendChild(heading);
-    card.appendChild(description);
-    app.appendChild(card);
+    products.forEach(product => {
+
+        function getActivePrice(product) {
+            const now = new Date();
+            const offerEnd = new Date(product.offerEndsAt);
+            const isOfferActive = now < offerEnd;
+
+            if (isOfferActive) {
+                return {
+                    price: product.pricing.discountPrice,
+                    originalPrice: product.pricing.originalPrice,
+                    isDiscount: true
+                };
+            }
+
+            return {
+                price: product.pricing.originalPrice,
+                originalPrice: null,
+                isDiscount: false
+            };
+        }
+
+        const priceData = getActivePrice(product);
+
+        // Responsive Column
+        const cardWrapper = document.createElement('div');
+        cardWrapper.className = "col-6 col-lg-4";
+
+        const card = document.createElement('div');
+        card.className = "card shadow-sm h-100";
+        card.style.cursor = "pointer";
+        card.style.position = "relative";
+        card.onclick = () => {
+            window.location.hash = `/polybag-details/:${product.id}`;
+        };
+
+        // Square Image
+        const imgWrapper = document.createElement('div');
+        imgWrapper.style.aspectRatio = "1 / 1";
+        imgWrapper.style.overflow = "hidden";
+
+        const img = document.createElement('img');
+        img.src = product.image;
+        img.className = "img-fluid w-100 h-100";
+        img.style.objectFit = "cover";
+        img.alt = product.name;
+
+        imgWrapper.appendChild(img);
+
+        // Discount Badge
+        if (priceData.isDiscount) {
+            const discountPercent = Math.round(
+                ((priceData.originalPrice - priceData.price) / priceData.originalPrice) * 100
+            );
+
+            const badge = document.createElement('span');
+            badge.className = "badge bg-danger position-absolute m-2";
+            badge.innerText = discountPercent + "% OFF";
+            card.appendChild(badge);
+        }
+
+        const cardBody = document.createElement('div');
+        cardBody.className = "card-body p-2";
+
+        const title = document.createElement('h6');
+        title.className = "card-title mb-1 small";
+        title.innerText = product.name;
+
+        const rating = document.createElement('div');
+        rating.className = "text-warning small mb-1";
+        rating.innerHTML = "★★★★★ <span class='text-muted'>(5.0)</span>";
+
+        const priceBox = document.createElement('div');
+        priceBox.className = "small";
+
+        if (priceData.isDiscount) {
+            priceBox.innerHTML = `
+                <span class="fw-bold">₹${priceData.price}</span>
+                <span class="text-decoration-line-through text-danger ms-1">₹${priceData.originalPrice}</span>
+            `;
+        } else {
+            priceBox.innerHTML = `<span class="fw-bold">₹${priceData.price}</span>`;
+        }
+
+        cardBody.appendChild(title);
+        cardBody.appendChild(rating);
+        cardBody.appendChild(priceBox);
+
+        card.appendChild(imgWrapper);
+        card.appendChild(cardBody);
+        cardWrapper.appendChild(card);
+        row.appendChild(cardWrapper);
+    });
+
+    container.appendChild(row);
+    app.appendChild(container);
+
+    hideLoader();
 }
