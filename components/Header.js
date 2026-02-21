@@ -40,7 +40,6 @@ export default function Header() {
     callBtn.style.backgroundColor = '#f2f2f2';
     callBtn.style.color = '#000';
     callBtn.style.textDecoration = 'none';
-
     callBtn.innerHTML = `<i class="bi bi-telephone-fill fs-5"></i>`;
 
     // ===== WhatsApp Icon Button =====
@@ -54,10 +53,25 @@ export default function Header() {
     whatsappBtn.style.backgroundColor = '#25D366';
     whatsappBtn.style.color = '#fff';
     whatsappBtn.style.textDecoration = 'none';
-
     whatsappBtn.innerHTML = `<i class="bi bi-whatsapp fs-5"></i>`;
 
-    btnWrapper.append(callBtn, whatsappBtn);
+    // ===== Info "i" Icon Button (Rectangle, same size, gray) =====
+    const infoBtn = document.createElement('a');
+    infoBtn.href = '/#/policy'; // yahan info page link
+    infoBtn.className = 'd-flex align-items-center justify-content-center';
+    infoBtn.style.width = '40px';
+    infoBtn.style.height = '40px';
+    infoBtn.style.backgroundColor = 'transparent';
+    infoBtn.style.color = '#6c757d'; // gray
+    infoBtn.style.textDecoration = 'none';
+    infoBtn.style.fontSize = '18px';
+    infoBtn.style.borderRadius = '0'; // no circle
+    infoBtn.style.padding = '0'; // padding inside for alignment
+
+    infoBtn.innerHTML = `<i class="bi bi-info-circle"></i>`; // Bootstrap icon
+
+    // Append all buttons
+    btnWrapper.append(callBtn, whatsappBtn, infoBtn);
 
     container.append(brand, btnWrapper);
     nav.appendChild(container);
