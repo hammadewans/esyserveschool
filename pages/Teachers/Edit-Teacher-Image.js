@@ -15,7 +15,7 @@ export default async function Teachers(teacherId) {
 
     /* ================= FETCH TEACHER ================= */
     showLoader();
-    let teacher = {}; // ✅ ALWAYS OBJECT
+    let teacher = {};
 
     try {
         const res = await fetch(`https://esyserve.top/search/teacher/${teacherId}`, {
@@ -33,7 +33,7 @@ export default async function Teachers(teacherId) {
         if (!res.ok) throw new Error(await res.text());
 
         const data = await res.json();
-        teacher = data && typeof data === 'object' ? data : {}; // ✅ NULL SAFE
+        teacher = data && typeof data === 'object' ? data : {};
 
     } catch (err) {
         console.error(err);
@@ -52,7 +52,6 @@ export default async function Teachers(teacherId) {
     const row = el('div', 'row justify-content-center');
     const col = el('div', 'col-12 col-md-6 col-lg-4');
 
-    // ⬇️ NO SHADOW, LIGHT OUTLINE ONLY
     const card = el('div', 'card border border-light');
 
     /* ===== HEADER ===== */
@@ -65,52 +64,77 @@ export default async function Teachers(teacherId) {
     /* ===== BODY ===== */
     const body = el('div', 'card-body p-3 text-center');
 
-    /* ===== IMAGE BOX ===== */
-    const imgBox = el(
-        'label',
-        'border border-1 rounded w-100 d-flex align-items-center justify-content-center position-relative'
-    );
-    imgBox.setAttribute('for', 'imgInput');
-    imgBox.style.cursor = 'pointer';
-    imgBox.style.aspectRatio = '3 / 4';
-    imgBox.style.background = '#f8f9fa';
-
-    const cameraIcon = el('i', 'bi bi-camera fs-4 text-muted');
-
-    const hint = el('div', 'small position-absolute bottom-0 w-100 text-center py-1 fw-semibold');
-    hint.textContent = 'Click to change photo';
-    hint.style.color = '#212529'; // dark, visible
-    hint.style.background = 'rgba(255, 255, 255, 0.7)'; // semi-transparent overlay
-    hint.style.pointerEvents = 'none'; // click passes through
-    hint.style.borderTop = '1px solid rgba(0,0,0,0.1)'; // optional subtle separator
-
-    const preview = el('img', 'img-fluid rounded');
+    /* ===== IMAGE PREVIEW ===== */
+    const preview = el('img', 'img-fluid rounded mb-3');
     preview.style.width = '100%';
-    preview.style.height = '100%';
+    preview.style.height = '400px';
     preview.style.objectFit = 'cover';
+    preview.style.background = '#f8f9fa';
 
-    // ✅ Show existing photo if available, else hide preview
     if (teacher?.imgteacher) {
         preview.src = teacher.imgteacher;
-        cameraIcon.classList.add('d-none');
     } else {
         preview.classList.add('d-none');
     }
 
-    imgBox.append(cameraIcon, preview, hint);
+    body.append(preview);
 
-    const imgInput = el('input', 'd-none');
-    imgInput.type = 'file';
-    imgInput.accept = 'image/*';
-    imgInput.id = 'imgInput';
-    imgInput.setAttribute('capture', 'environment');
+    /* ===== FILE INPUTS (HIDDEN) ===== */
+    const cameraInput = el('input', 'd-none');
+    cameraInput.type = 'file';
+    cameraInput.accept = 'image/*';
+    cameraInput.capture = 'environment';
 
-    /* ===== BUTTON ===== */
-    const btn = el('button', 'btn btn-primary w-100 mt-3');
-    btn.innerHTML = `<i class="bi bi-cloud-upload me-1"></i> Update Photo`;
-    btn.type = 'button';
+    const galleryInput = el('input', 'd-none');
+    galleryInput.type = 'file';
+    galleryInput.accept = 'image/*';
 
-    body.append(imgBox, imgInput, btn);
+    body.append(cameraInput, galleryInput);
+
+    /* ===== CAMERA & GALLERY BUTTONS ===== */
+    const btnWrapper = el('div', 'd-flex w-100 mb-3');
+    btnWrapper.style.gap = '10px';
+
+    const cameraBtn = el('button', 'btn btn-primary flex-fill shadow-sm');
+    cameraBtn.type = 'button';
+    cameraBtn.textContent = 'Camera';
+    cameraBtn.style.borderRadius = '8px';
+    cameraBtn.style.padding = '8px 0';
+    cameraBtn.style.fontWeight = '500';
+    cameraBtn.style.transition = '0.2s';
+
+    const galleryBtn = el('button', 'btn btn-secondary flex-fill shadow-sm');
+    galleryBtn.type = 'button';
+    galleryBtn.textContent = 'Gallery';
+    galleryBtn.style.borderRadius = '8px';
+    galleryBtn.style.padding = '8px 0';
+    galleryBtn.style.fontWeight = '500';
+    galleryBtn.style.transition = '0.2s';
+
+    [cameraBtn, galleryBtn].forEach(btn => {
+        btn.addEventListener('mouseenter', () => btn.style.transform = 'translateY(-2px)');
+        btn.addEventListener('mouseleave', () => btn.style.transform = 'translateY(0)');
+    });
+
+    cameraBtn.addEventListener('click', () => cameraInput.click());
+    galleryBtn.addEventListener('click', () => galleryInput.click());
+
+    btnWrapper.append(cameraBtn, galleryBtn);
+
+    /* ===== UPLOAD BUTTON ===== */
+    const uploadBtn = el('button', 'btn btn-success w-100 shadow-sm');
+    uploadBtn.type = 'button';
+    uploadBtn.textContent = 'Upload Photo';
+    uploadBtn.style.borderRadius = '8px';
+    uploadBtn.style.padding = '8px 0';
+    uploadBtn.style.fontWeight = '500';
+    uploadBtn.style.transition = '0.2s';
+
+    uploadBtn.addEventListener('mouseenter', () => uploadBtn.style.transform = 'translateY(-2px)');
+    uploadBtn.addEventListener('mouseleave', () => uploadBtn.style.transform = 'translateY(0)');
+
+    body.append(btnWrapper, uploadBtn);
+
     card.append(header, body);
     col.append(card);
     row.append(col);
@@ -136,10 +160,8 @@ export default async function Teachers(teacherId) {
         });
     }
 
-    imgInput.addEventListener('change', () => {
-        const file = imgInput.files?.[0];
+    async function handleFile(file) {
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = e => {
             const img = new Image();
@@ -169,17 +191,19 @@ export default async function Teachers(teacherId) {
 
                 preview.src = canvas.toDataURL('image/jpeg', 0.9);
                 preview.classList.remove('d-none');
-                cameraIcon.classList.add('d-none');
 
                 await compressToTarget(canvas, file);
             };
             img.src = e.target.result;
         };
         reader.readAsDataURL(file);
-    });
+    }
 
-    /* ================= UPLOAD ================= */
-    btn.addEventListener('click', async () => {
+    cameraInput.addEventListener('change', () => handleFile(cameraInput.files?.[0]));
+    galleryInput.addEventListener('change', () => handleFile(galleryInput.files?.[0]));
+
+    /* ================= UPLOAD LOGIC ================= */
+    uploadBtn.addEventListener('click', async () => {
         if (!compressedBlob) {
             Toast.error('Please select a photo');
             return;
