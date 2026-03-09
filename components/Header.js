@@ -44,7 +44,7 @@ export default function Header() {
 
     // ===== WhatsApp Icon Button =====
     const whatsappBtn = document.createElement('a');
-    whatsappBtn.href = 'https://wa.me/918860110882';
+    whatsappBtn.href = 'https://wa.me/918860110882?text=Hello%20EsyServe,%20I%20want%20to%20inquire%20about%20ID%20cards%20and%20other%20services.';
     whatsappBtn.target = '_blank';
     whatsappBtn.className = 'd-flex align-items-center justify-content-center';
     whatsappBtn.style.width = '40px';
