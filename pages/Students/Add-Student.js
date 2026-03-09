@@ -26,8 +26,8 @@ export default function Students() {
     // ---------------- IMAGE COLUMN ----------------
     const imgCol = el('div', 'col-12 col-lg-4 d-flex flex-column align-items-center');
 
-    const imgLabel = el('label', 'border border-2 rounded d-flex flex-column align-items-center justify-content-center w-100');
-    imgLabel.style.cursor = 'pointer';
+    const imgLabel = el('div', 'border border-2 rounded d-flex flex-column align-items-center justify-content-center w-100');
+    imgLabel.style.cursor = 'default';
     imgLabel.style.aspectRatio = '3/4';
     imgLabel.style.maxWidth = '350px';
     imgLabel.style.backgroundColor = '#f8f9fa';
@@ -37,26 +37,62 @@ export default function Students() {
     imgLabel.style.alignItems = 'center';
     imgLabel.style.justifyContent = 'center';
     imgLabel.style.marginBottom = '10px';
-    imgLabel.setAttribute('for', 'imgInput');
 
     const cameraIcon = el('i', 'bi bi-camera fs-1 text-muted'); 
-    const imgText = el('div', 'small text-muted text-center mt-1');
-    imgText.textContent = 'Click student image (Optional)';
 
     const preview = el('img', 'img-fluid rounded d-none');
     preview.style.width = '100%';
     preview.style.height = '100%';
     preview.style.objectFit = 'cover';
 
-    imgLabel.append(cameraIcon, preview, imgText);
+    imgLabel.append(cameraIcon, preview);
+    imgCol.append(imgLabel);
 
     const imgInput = el('input', 'd-none');
     imgInput.type = 'file';
     imgInput.accept = 'image/*';
-    imgInput.setAttribute('capture', 'environment');
-    imgInput.id = 'imgInput';
+    imgCol.append(imgInput);
 
-    imgCol.append(imgLabel, imgInput);
+    // ---------------- CAMERA + GALLERY BUTTONS ----------------
+    const btnWrapper = el('div', 'd-flex w-100 mt-2'); 
+    btnWrapper.style.gap = '10px'; // space between buttons
+
+    const cameraBtn = el('button','btn btn-primary flex-fill shadow-sm');
+    cameraBtn.textContent = 'Camera';
+    cameraBtn.type = 'button';
+    cameraBtn.style.borderRadius = '8px';
+    cameraBtn.style.padding = '8px 0';
+    cameraBtn.style.fontWeight = '500';
+    cameraBtn.style.transition = '0.2s';
+
+    const galleryBtn = el('button','btn btn-secondary flex-fill shadow-sm');
+    galleryBtn.textContent = 'Gallery';
+    galleryBtn.type = 'button';
+    galleryBtn.style.borderRadius = '8px';
+    galleryBtn.style.padding = '8px 0';
+    galleryBtn.style.fontWeight = '500';
+    galleryBtn.style.transition = '0.2s';
+
+    // Hover effects
+    [cameraBtn, galleryBtn].forEach(btn => {
+        btn.addEventListener('mouseenter', () => btn.style.transform='translateY(-2px)');
+        btn.addEventListener('mouseleave', () => btn.style.transform='translateY(0)');
+    });
+
+    btnWrapper.append(cameraBtn, galleryBtn);
+    imgCol.append(btnWrapper);
+
+    // Camera opens with capture
+    cameraBtn.addEventListener('click', () => {
+        imgInput.setAttribute('capture', 'environment'); // camera
+        imgInput.click();
+    });
+
+    // Gallery opens file picker
+    galleryBtn.addEventListener('click', () => {
+        imgInput.removeAttribute('capture'); // gallery
+        imgInput.click();
+    });
 
     // ---------------- INPUTS COLUMN ----------------
     const inputCol = el('div', 'col-12 col-lg-8');
@@ -210,7 +246,6 @@ export default function Students() {
                 preview.src=canvas.toDataURL('image/jpeg',0.9);
                 preview.classList.remove('d-none');
                 cameraIcon.classList.add('d-none');
-                imgText.classList.add('d-none');
                 await compressToTarget(canvas,file);
             };
             img.src=e.target.result;
@@ -220,7 +255,6 @@ export default function Students() {
 
     // ---------------- SAVE BUTTON CLICK ----------------
     saveBtn.addEventListener('click', async () => {
-        // --- TRIMMED VALUES ---
         const studentVal = studentName.value.trim();
         const fatherVal = fatherName.value.trim();
         const motherVal = motherName.value.trim();
@@ -229,7 +263,6 @@ export default function Students() {
         const contactVal = contact.value.trim();
         const addressVal = address.value.trim();
 
-        // --- VALIDATION ---
         if (!studentVal) { Toast.error('Student Name is required'); return; }
         if (!fatherVal) { Toast.error('Father Name is required'); return; }
         if (!motherVal) { Toast.error('Mother Name is required'); return; }
@@ -244,20 +277,16 @@ export default function Students() {
         if (dateObj.getDate() !== d || dateObj.getMonth() !== m - 1 || dateObj.getFullYear() !== y) {
             Toast.error('Invalid Date of Birth'); return;
         }
-
         if (!contactVal) { Toast.error('Contact Number is required'); return; }
         if (!/^\d{10}$/.test(contactVal)) { Toast.error('Contact Number must be exactly 10 digits'); return; }
         if (!addressVal) { Toast.error('Address is required'); return; }
 
-        // Get selected class, section, role
         const selectedClass = form.querySelector('input[name="class"]:checked')?.value;
         const selectedSection = form.querySelector('input[name="section"]:checked')?.value;
         const selectedRole = form.querySelector('input[name="role"]:checked')?.value;
 
-        // --- CONVERT DOB TO YYYY-MM-DD ---
         const dobFormatted = `${y.toString().padStart(4,'0')}-${m.toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
 
-        // --- FORM DATA ---
         const formData = new FormData();
         formData.append('student', studentVal);
         formData.append('father', fatherVal);
@@ -271,7 +300,6 @@ export default function Students() {
         formData.append('role', selectedRole);
         if (compressedBlob) formData.append('imgstudent', compressedBlob);
 
-        // --- SEND REQUEST ---
         try {
             const res = await fetch('https://esyserve.top/add/student', {
                 method: 'POST',
@@ -289,20 +317,11 @@ export default function Students() {
 
             if (res.status === 200) {
                 Toast.success(data.message || 'Student added successfully!');
-
-                // Reset only text inputs and textarea
                 [studentName, fatherName, motherName, rollNo, dob, contact, address].forEach(input => input.value = '');
-
-                // Reset image preview
                 preview.src = '';
                 preview.classList.add('d-none');
                 cameraIcon.classList.remove('d-none');
-                imgText.classList.remove('d-none');
                 compressedBlob = null;
-
-                // --- Keep last selected radio buttons --- no changes needed
-            } else if (res.status === 400) {
-                Toast.error(data);
             } else {
                 Toast.error(data);
             }
