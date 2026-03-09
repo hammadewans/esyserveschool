@@ -51,7 +51,6 @@ export default async function Teachers(teacherId) {
     const wrapper = el('div', 'container py-4');
     const row = el('div', 'row justify-content-center');
     const col = el('div', 'col-12 col-md-6 col-lg-4');
-
     const card = el('div', 'card border border-light');
 
     /* ===== HEADER ===== */
@@ -64,20 +63,23 @@ export default async function Teachers(teacherId) {
     /* ===== BODY ===== */
     const body = el('div', 'card-body p-3 text-center');
 
-    /* ===== IMAGE PREVIEW ===== */
-    const preview = el('img', 'img-fluid rounded mb-3');
+    /* ===== IMAGE BOX (3:4 RATIO) ===== */
+    const imgBox = el('div', 'border border-1 rounded w-100 d-flex align-items-center justify-content-center position-relative');
+    imgBox.style.aspectRatio = '3 / 4';
+    imgBox.style.background = '#f8f9fa';
+    imgBox.style.overflow = 'hidden';
+
+    const cameraIcon = el('i', 'bi bi-camera fs-4 text-muted position-absolute');
+    cameraIcon.style.pointerEvents = 'none';
+
+    const preview = el('img', 'img-fluid rounded');
     preview.style.width = '100%';
-    preview.style.height = '400px';
+    preview.style.height = '100%';
     preview.style.objectFit = 'cover';
-    preview.style.background = '#f8f9fa';
+    preview.style.display = teacher?.imgteacher ? 'block' : 'none';
+    if (teacher?.imgteacher) preview.src = teacher.imgteacher;
 
-    if (teacher?.imgteacher) {
-        preview.src = teacher.imgteacher;
-    } else {
-        preview.classList.add('d-none');
-    }
-
-    body.append(preview);
+    imgBox.append(cameraIcon, preview);
 
     /* ===== FILE INPUTS (HIDDEN) ===== */
     const cameraInput = el('input', 'd-none');
@@ -89,10 +91,10 @@ export default async function Teachers(teacherId) {
     galleryInput.type = 'file';
     galleryInput.accept = 'image/*';
 
-    body.append(cameraInput, galleryInput);
+    body.append(imgBox, cameraInput, galleryInput);
 
     /* ===== CAMERA & GALLERY BUTTONS ===== */
-    const btnWrapper = el('div', 'd-flex w-100 mb-3');
+    const btnWrapper = el('div', 'd-flex w-100 mt-3');
     btnWrapper.style.gap = '10px';
 
     const cameraBtn = el('button', 'btn btn-primary flex-fill shadow-sm');
@@ -122,7 +124,7 @@ export default async function Teachers(teacherId) {
     btnWrapper.append(cameraBtn, galleryBtn);
 
     /* ===== UPLOAD BUTTON ===== */
-    const uploadBtn = el('button', 'btn btn-success w-100 shadow-sm');
+    const uploadBtn = el('button', 'btn btn-success w-100 mt-3 shadow-sm');
     uploadBtn.type = 'button';
     uploadBtn.textContent = 'Upload Photo';
     uploadBtn.style.borderRadius = '8px';
@@ -168,7 +170,7 @@ export default async function Teachers(teacherId) {
             img.onload = async () => {
                 const canvas = document.createElement('canvas');
                 canvas.width = 1200;
-                canvas.height = 1600;
+                canvas.height = 1600; // 3:4 ratio
                 const ctx = canvas.getContext('2d');
 
                 const srcRatio = img.width / img.height;
