@@ -50,6 +50,7 @@ container.appendChild(row);
 
 app.appendChild(container);
 
+// FUNCTION TO RENDER TEMPLATES
 function renderTemplates(type = "all") {
 
     row.innerHTML = '';
@@ -124,8 +125,8 @@ function renderTemplates(type = "all") {
         col.appendChild(card);
         row.appendChild(col);
 
-        requestAnimationFrame(() => {
-
+        // SCALE SVG AFTER FONT READY
+        document.fonts.ready.then(() => {
             const templateWidth = preview.scrollWidth;
             const templateHeight = preview.scrollHeight;
 
@@ -138,7 +139,6 @@ function renderTemplates(type = "all") {
             const scale = Math.min(scaleWidth, scaleHeight);
 
             preview.style.transform = `scale(${scale})`;
-
         });
 
     });
