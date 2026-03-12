@@ -134,3 +134,7 @@ router.add('/polybag-details/:id', async (params) => {
     const page = await import('/pages/Products/Polybag-Details.js');
     return page.default(id);
 });
+router.add('/templates', async () => {
+    const page = await import('/pages/Templates/MyTemplates.js');
+    return page.default();
+});
