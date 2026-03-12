@@ -13,7 +13,8 @@ export default function Navbar() {
         { name: 'Home', route: '/', icon: 'bi-house-door-fill' },
         { name: 'Students', route: '/students', icon: 'bi-people-fill' },
         { name: 'Teachers', route: '/teachers', icon: 'bi-mortarboard' },
-        { name: 'School', route: '/school', icon: 'bi-buildings' }
+        { name: 'School', route: '/school', icon: 'bi-buildings' },
+        { name: 'Templates', route: '/templates', icon: 'bi-layout-text-window-reverse' } // added
     ];
 
     links.forEach(item => {
@@ -22,11 +23,9 @@ export default function Navbar() {
         link.dataset.route = item.route;
         link.className = 'nav-link d-flex flex-column align-items-center text-secondary small';
 
-        // Icon
         const icon = document.createElement('i');
         icon.className = `bi ${item.icon} fs-5`;
 
-        // Label
         const label = document.createElement('span');
         label.textContent = item.name;
         label.className = 'small';
@@ -41,12 +40,10 @@ export default function Navbar() {
     setActiveNav();
     window.addEventListener('hashchange', setActiveNav);
 
-    // ===== Add padding to content so it's not hidden behind navbar =====
     adjustContentForNavbar(nav);
     window.addEventListener('resize', () => adjustContentForNavbar(nav));
 }
 
-// Active link highlighting
 function setActiveNav() {
     const current = location.hash.slice(1) || '/';
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -57,7 +54,6 @@ function setActiveNav() {
     });
 }
 
-// Dynamically add padding to the app content based on navbar height
 function adjustContentForNavbar(nav) {
     const app = document.getElementById('app');
     if (nav && app) {
