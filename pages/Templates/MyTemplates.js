@@ -35,7 +35,6 @@ export default async function Home() {
         // FILTER BUTTONS
         const filterBox = document.createElement('div');
         filterBox.className = 'text-center mb-4';
-
         filterBox.innerHTML = `
             <button class="btn btn-outline-primary me-2 filter-btn active" data-type="all">All</button>
             <button class="btn btn-outline-primary me-2 filter-btn" data-type="students">Students</button>
@@ -61,36 +60,26 @@ export default async function Home() {
             filtered.forEach(template => {
 
                 const previewData = {
-
                     school: "Sunrise Public School",
-
                     location: "Near Bus Stand",
                     area: "Shyam Nagar",
                     city: "Jaipur",
                     district: "Jaipur",
                     state: "Rajasthan",
                     pincode: "302012",
-
                     student: "Rahul Sharma",
                     father: "Mahesh Sharma",
                     mother: "Suman Sharma",
-
                     class: "10",
                     sectionclass: "A",
-
                     dob: "12-05-2009",
                     contact: "9876543210",
-
                     address: "Shyam Nagar, Jaipur",
-
                     role: template.type === "teacher" ? "Teacher" : "Student",
-
                     school_contact: "0141-2223344",
-
                     imgstudent: "/assets/images/student.avif",
                     imgsignature: "/assets/images/signature.avif",
                     imglogo: "/assets/images/logo.avif"
-
                 };
 
                 let html = template.html;
@@ -118,13 +107,11 @@ export default async function Home() {
                 preview.className = 'template-preview';
                 preview.innerHTML = html;
 
-                // FIXED SCALE: full width & height
+                // FULL WIDTH & HEIGHT, NO ANIMATION
                 preview.style.width = '100%';
                 preview.style.height = '100%';
-                preview.style.transform = 'none'; // remove any scaling
-                preview.style.display = 'flex';
-                preview.style.alignItems = 'center';
-                preview.style.justifyContent = 'center';
+                preview.style.transform = 'none';
+                preview.style.display = 'block';
 
                 frame.appendChild(preview);
                 card.appendChild(name);
@@ -141,25 +128,18 @@ export default async function Home() {
 
         // FILTER CLICK
         document.querySelectorAll('.filter-btn').forEach(btn => {
-
             btn.addEventListener('click', () => {
-
                 document.querySelectorAll('.filter-btn')
                     .forEach(b => b.classList.remove('active'));
-
                 btn.classList.add('active');
-
                 const type = btn.dataset.type;
                 renderTemplates(type);
-
             });
-
         });
 
         // CSS
         const style = document.createElement('style');
         style.textContent = `
-
         .template-card{
             background:white;
             border-radius:12px;
@@ -178,9 +158,7 @@ export default async function Home() {
         .template-frame{
             width:100%;
             aspect-ratio:1/1;
-            display:flex;
-            align-items:center;
-            justify-content:center;
+            display:block;
             overflow:hidden;
             border-radius:8px;
         }
@@ -195,16 +173,13 @@ export default async function Home() {
             background:#0d6efd;
             color:white;
         }
-
         `;
         document.head.appendChild(style);
 
     } catch (err) {
-
         hideLoader();
         console.error(err);
         app.innerHTML = '<div class="text-danger text-center mt-5">Failed to load templates</div>';
-
     }
 
 }
