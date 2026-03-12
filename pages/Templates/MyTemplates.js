@@ -118,30 +118,19 @@ export default async function Home() {
                 preview.className = 'template-preview';
                 preview.innerHTML = html;
 
+                // FIXED SCALE: full width & height
+                preview.style.width = '100%';
+                preview.style.height = '100%';
+                preview.style.transform = 'none'; // remove any scaling
+                preview.style.display = 'flex';
+                preview.style.alignItems = 'center';
+                preview.style.justifyContent = 'center';
+
                 frame.appendChild(preview);
                 card.appendChild(name);
                 card.appendChild(frame);
                 col.appendChild(card);
                 row.appendChild(col);
-
-                // SCALE SVG AFTER FONT READY
-                document.fonts.ready.then(() => {
-                    const templateWidth = preview.scrollWidth;
-                    const templateHeight = preview.scrollHeight;
-
-                    const frameWidth = frame.clientWidth;
-                    const frameHeight = frame.clientHeight;
-
-                    const scaleWidth = frameWidth / templateWidth;
-                    const scaleHeight = frameHeight / templateHeight;
-
-                    let scale = Math.min(scaleWidth, scaleHeight);
-
-                    scale *= 0.95; // 5% margin to avoid crop
-                    scale = Math.min(scale, 1); // max scale = 1
-
-                    preview.style.transform = `scale(${scale})`;
-                });
 
             });
 
@@ -176,12 +165,6 @@ export default async function Home() {
             border-radius:12px;
             padding:12px;
             border:1px solid #e5e5e5;
-            transition:all .25s ease;
-        }
-
-        .template-card:hover{
-            transform:translateY(-6px);
-            box-shadow:0 12px 25px rgba(0,0,0,0.15);
         }
 
         .template-title{
@@ -200,17 +183,12 @@ export default async function Home() {
             justify-content:center;
             overflow:hidden;
             border-radius:8px;
-            background:
-                linear-gradient(45deg,#f3f3f3 25%,transparent 25%),
-                linear-gradient(-45deg,#f3f3f3 25%,transparent 25%),
-                linear-gradient(45deg,transparent 75%,#f3f3f3 75%),
-                linear-gradient(-45deg,transparent 75%,#f3f3f3 75%);
-            background-size:20px 20px;
-            background-position:0 0,0 10px,10px -10px,-10px 0px;
         }
 
-        .template-preview{
-            transform-origin:center;
+        .template-preview svg{
+            width:100%;
+            height:100%;
+            object-fit:contain;
         }
 
         .filter-btn.active{
