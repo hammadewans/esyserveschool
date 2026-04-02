@@ -18,7 +18,7 @@ export default function AutoLoginGenerate() {
     const body = el('div', 'card-body');
 
     const title = el('h5', 'fw-bold text-center mb-4');
-    title.textContent = 'Generate Auto‑Login Link';
+    title.textContent = 'Generate Auto-Login Link';
 
     // ===== Floating Inputs =====
     const emailWrapper = el('div', 'form-floating mb-3');
@@ -61,19 +61,27 @@ export default function AutoLoginGenerate() {
     expLabel.textContent = 'Link Expiry';
     const expGroup = el('div', 'd-flex flex-wrap gap-2');
 
-    const expiryDays = [1,2,3,4,5,6,7];
-    let selectedDays = 1; // default 1 day
+    const expiryOptions = [1,2,3,4,5,6,7,'unlimited'];
+    let selectedDays = 1;
 
-    expiryDays.forEach(day => {
+    expiryOptions.forEach(option => {
         const btn = el('button', 'btn btn-outline-primary');
         btn.type = 'button';
-        btn.textContent = `${day} day${day>1?'s':''}`;
-        if(day===selectedDays) btn.classList.add('active');
+
+        if(option === 'unlimited'){
+            btn.textContent = 'Unlimited';
+        } else {
+            btn.textContent = `${option} day${option>1?'s':''}`;
+        }
+
+        if(option === selectedDays) btn.classList.add('active');
+
         btn.onclick = () => {
-            selectedDays = day;
+            selectedDays = option;
             Array.from(expGroup.children).forEach(b=>b.classList.remove('active'));
             btn.classList.add('active');
         };
+
         expGroup.appendChild(btn);
     });
 
@@ -87,21 +95,28 @@ export default function AutoLoginGenerate() {
     const resultBox = el('div', 'd-none');
     const linkInput = el('input', 'form-control mb-2');
     linkInput.readOnly = true;
-    const whatsappBtn = el('button', 'btn btn-success w-100');
-    whatsappBtn.innerHTML = '<i class="bi bi-whatsapp me-1"></i> Share on WhatsApp';
-    resultBox.append(linkInput, whatsappBtn);
+
+    const copyBtn = el('button', 'btn btn-success w-100');
+    copyBtn.innerHTML = '<i class="bi bi-clipboard me-1"></i> Copy Link';
+
+    resultBox.append(linkInput, copyBtn);
 
     // ===== Generate Logic =====
     generateBtn.onclick = async () => {
         const email = emailInput.value.trim();
         const password = passInput.value.trim();
 
-        if (!email || !password || !selectedDays) {
+        if (!email || !password) {
             Toast.warning('All fields are required');
             return;
         }
 
-        const exp = Date.now() + selectedDays*24*60*60*1000;
+        let exp;
+        if (selectedDays === 'unlimited') {
+            exp = null;
+        } else {
+            exp = Date.now() + selectedDays * 24 * 60 * 60 * 1000;
+        }
 
         showLoader();
         try {
@@ -127,14 +142,18 @@ export default function AutoLoginGenerate() {
             linkInput.value = link;
             resultBox.classList.remove('d-none');
 
-            whatsappBtn.onclick = () => {
-                const msg = encodeURIComponent(
-                    `Auto‑Login Link (valid till ${new Date(exp).toLocaleString()}):\n${link}`
-                );
-                window.open(`https://wa.me/?text=${msg}`, '_blank');
+            // ===== Copy Logic =====
+            copyBtn.onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(link);
+                    Toast.success('Link copied to clipboard');
+                } catch (err) {
+                    console.error(err);
+                    Toast.error('Failed to copy link');
+                }
             };
 
-            Toast.success('Auto‑login link generated');
+            Toast.success('Auto-login link generated');
         } catch (err) {
             console.error(err);
             Toast.error('Something went wrong');
