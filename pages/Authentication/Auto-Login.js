@@ -58,9 +58,12 @@ export default async function AutoLogin(token) {
         return;
     }
 
-    /* ===== EXPIRY CHECK ===== */
+    /* ===== EXPIRY CHECK (FIXED FOR UNLIMITED) ===== */
     const now = Date.now();
-    if (!payload.exp || now > payload.exp) {
+
+    // Agar exp exist karta hai tabhi expiry check karo
+    // exp = null => unlimited (skip)
+    if (payload.exp && now > payload.exp) {
         hideLoader();
         title.textContent = 'Link Expired';
         message.textContent = 'This login link has expired.';
@@ -103,15 +106,13 @@ export default async function AutoLogin(token) {
 
         Toast.success(data);
         window.location.hash = '#/';
-
     } catch (err) {
         console.error(err);
         hideLoader();
         title.textContent = 'Network Error';
         message.textContent = 'Please try again later.';
         Toast.error('Network error');
-    }
-    finally {
+    } finally {
         hideLoader();
     }
-}   
+}
