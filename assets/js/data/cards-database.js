@@ -20,14 +20,14 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 14, discountPrice: 11 },
+                    pricing: { originalPrice: 16, discountPrice: 13 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
                     holderType: "Single Side Card",   
-                    pricing: { originalPrice: 15, discountPrice: 12 },
+                    pricing: { originalPrice: 17, discountPrice: 14 },
                     inStock: true
                 }
             ]
@@ -50,14 +50,14 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 19, discountPrice: 16 },
+                    pricing: { originalPrice: 21, discountPrice: 18 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 20, discountPrice: 17 },
+                    pricing: { originalPrice: 22, discountPrice: 19 },
                     inStock: true
                 }
             ]
@@ -80,14 +80,14 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 19, discountPrice: 16 },
+                    pricing: { originalPrice: 21, discountPrice: 18 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 20, discountPrice: 17 },
+                    pricing: { originalPrice: 22, discountPrice: 19 },
                     inStock: true
                 }
             ]
@@ -110,14 +110,14 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 19, discountPrice: 16 },
+                    pricing: { originalPrice: 21, discountPrice: 18 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 20, discountPrice: 17 },
+                    pricing: { originalPrice: 22, discountPrice: 19 },
                     inStock: true
                 }
             ]
@@ -140,28 +140,28 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 19, discountPrice: 16 },
-                    inStock: true
-                },
-                {
-                    variantId: "20mm",
-                    lanyardType: "20mm Lanyard",
-                    holderType: "Single Side Card",
-                    pricing: { originalPrice: 20, discountPrice: 17 },
-                    inStock: true
-                },
-                {
-                    variantId: "16mm",
-                    lanyardType: "16mm Lanyard",
-                    holderType: "Double Side Card",
                     pricing: { originalPrice: 21, discountPrice: 18 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
-                    holderType: "Double Side Card",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 22, discountPrice: 19 },
+                    inStock: true
+                },
+                {
+                    variantId: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 23, discountPrice: 20 },
+                    inStock: true
+                },
+                {
+                    variantId: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 24, discountPrice: 21 },
                     inStock: true
                 }
             ]
@@ -184,14 +184,14 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Double Side Card",
-                    pricing: { originalPrice: 23, discountPrice: 20 },
+                    pricing: { originalPrice: 25, discountPrice: 22 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
                     holderType: "Double Side Card",
-                    pricing: { originalPrice: 24, discountPrice: 21 },
+                    pricing: { originalPrice: 26, discountPrice: 23 },
                     inStock: true
                 }
             ]
@@ -214,28 +214,28 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 25, discountPrice: 22 },
-                    inStock: true
-                },
-                {
-                    variantId: "20mm",
-                    lanyardType: "20mm Lanyard",
-                    holderType: "Single Side Card",
-                    pricing: { originalPrice: 26, discountPrice: 23 },
-                    inStock: true
-                },
-                {
-                    variantId: "16mm",
-                    lanyardType: "16mm Lanyard",
-                    holderType: "Double Side Card",
                     pricing: { originalPrice: 27, discountPrice: 24 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
-                    holderType: "Double Side Card",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 28, discountPrice: 25 },
+                    inStock: true
+                },
+                {
+                    variantId: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 29, discountPrice: 26 },
+                    inStock: true
+                },
+                {
+                    variantId: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 30, discountPrice: 27 },
                     inStock: true
                 }
             ]
@@ -258,28 +258,28 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 22, discountPrice: 19 },
-                    inStock: true
-                },
-                {
-                    variantId: "20mm",
-                    lanyardType: "20mm Lanyard",
-                    holderType: "Single Side Card",
-                    pricing: { originalPrice: 23, discountPrice: 20 },
-                    inStock: true
-                },
-                {
-                    variantId: "16mm",
-                    lanyardType: "16mm Lanyard",
-                    holderType: "Double Side Card",
                     pricing: { originalPrice: 24, discountPrice: 21 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
-                    holderType: "Double Side Card",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 25, discountPrice: 22 },
+                    inStock: true
+                },
+                {
+                    variantId: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 26, discountPrice: 23 },
+                    inStock: true
+                },
+                {
+                    variantId: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 27, discountPrice: 24 },
                     inStock: true
                 }
             ]
@@ -302,14 +302,14 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 23, discountPrice: 20 },
+                    pricing: { originalPrice: 25, discountPrice: 22 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 24, discountPrice: 21 },
+                    pricing: { originalPrice: 26, discountPrice: 23 },
                     inStock: true
                 },
             ]
@@ -332,28 +332,28 @@ export const cardsDatabase = {
                     variantId: "16mm",
                     lanyardType: "16mm Lanyard",
                     holderType: "Single Side Card",
-                    pricing: { originalPrice: 33, discountPrice: 30 },
-                    inStock: true
-                },
-                {
-                    variantId: "20mm",
-                    lanyardType: "20mm Lanyard",
-                    holderType: "Single Side Card",
-                    pricing: { originalPrice: 34, discountPrice: 31 },
-                    inStock: true
-                },
-                {
-                    variantId: "16mm",
-                    lanyardType: "16mm Lanyard",
-                    holderType: "Double Side Card",
                     pricing: { originalPrice: 35, discountPrice: 32 },
                     inStock: true
                 },
                 {
                     variantId: "20mm",
                     lanyardType: "20mm Lanyard",
-                    holderType: "Double Side Card",
+                    holderType: "Single Side Card",
                     pricing: { originalPrice: 36, discountPrice: 33 },
+                    inStock: true
+                },
+                {
+                    variantId: "16mm",
+                    lanyardType: "16mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 37, discountPrice: 34 },
+                    inStock: true
+                },
+                {
+                    variantId: "20mm",
+                    lanyardType: "20mm Lanyard",
+                    holderType: "Double Side Card",
+                    pricing: { originalPrice: 38, discountPrice: 35 },
                     inStock: true
                 }
             ]
