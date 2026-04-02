@@ -4,7 +4,9 @@ import Header from '/components/Header.js';
 import Navbar from '/components/Navbar.js';
 import { initLoader } from '/assets/js/loader.js';
 import Toast from '/components/Toast.js';
-// Make globally accessible
+import Disclaimer from '/components/Disclaimer.js';
+
+// global
 window.Toast = Toast;
 
 initLoader();
@@ -12,6 +14,26 @@ Header();
 Navbar();
 
 
+// 🔥 DISCLAIMER FUNCTION
+
+// 🔥 EVERY RELOAD SHOW
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        const div = document.createElement("div");
+        div.innerHTML = Disclaimer();
+
+        document.body.appendChild(div);
+
+        document.getElementById("acceptDisclaimer")
+        .addEventListener("click", () => {
+            document.getElementById("disclaimerModal").remove();
+        });
+
+    }, 200); // router ke baad show hoga
+});
+
+
+// ROUTER START
 const router = new Router('/');
 
 router.add('/', async () => {
