@@ -23,7 +23,7 @@ export const diaryDatabase = {
                     id: "v1",
                     title: "120 Pages Diary",
                     subtitle: "Student Info, Rules, Holidays, Notes",
-                    pricing: { originalPrice: 35, discountPrice: 28 },
+                    pricing: { originalPrice: 30, discountPrice: 25 },
                     inStock: true
                 }
             ]
