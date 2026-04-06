@@ -178,7 +178,7 @@ export const cardsDatabase = {
             offerEndsAt: "2026-09-01T00:00:00",
             specifications: {
                 Material: "Acrylic",
-                Thickness: "1000 Micron",
+                Thickness: "16mm",
                 Lamination: "Non Lamination",
                 Holder: "Acrylic Custom Holder",
                 Lanyard: "High Quality Digital Print Lanyard"
