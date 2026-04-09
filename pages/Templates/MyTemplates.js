@@ -59,33 +59,73 @@ export default async function Home() {
 
             filtered.forEach(template => {
 
-                const previewData = {
-                    school: "Sunrise Public School",
-                    location: "Near Bus Stand",
-                    area: "Shyam Nagar",
-                    city: "Jaipur",
-                    district: "Jaipur",
-                    state: "Rajasthan",
-                    pincode: "302012",
-                    student: "Rahul Sharma",
-                    father: "Mahesh Sharma",
-                    mother: "Suman Sharma",
-                    class: "10",
-                    sectionclass: "A",
-                    dob: "12-05-2009",
-                    contact: "9876543210",
-                    address: "Shyam Nagar, Jaipur",
-                    role: template.type === "teacher" ? "Teacher" : "Student",
-                    school_contact: "0141-2223344",
-                    imgstudent: "/assets/images/student.avif",
-                    imgsignature: "/assets/images/signature.avif",
-                    imglogo: "/assets/images/logo.avif"
-                };
+                let previewData = {};
+
+                // ================= TEACHER DATA =================
+                if (template.type === "teacher") {
+
+                    previewData = {
+                        school: "Sunrise Public School",
+                        location: "Near Police Check Post Harsoli",
+                        area: "Harsoli",
+                        city: "Muzaffarnagar",
+                        district: "Muzaffarnagar",
+                        state: "Uttar Pradesh",
+                        pincode: "251001",
+
+                        name: "Khushnuma Parveen",
+                        father: "Nawab Ali",
+                        mother: "Not Required",
+                        role: "Assistant Teacher",
+                        dob: "2003-02-04",
+                        contact: "8923128781",
+                        address: "Vill. Kabirpur Po. Harsoli District Muzaffarnagar",
+
+                        school_contact: "8006890786",
+
+                        imgteacher: "/assets/images/teacher.avif",
+                        imgsignature: "/assets/images/signature.avif",
+                        imglogo: "/assets/images/logo.avif"
+                    };
+
+                }
+
+                // ================= STUDENT DATA =================
+                else {
+
+                    previewData = {
+                        school: "Sunrise Public School",
+                        location: "Near Bus Stand",
+                        area: "Shyam Nagar",
+                        city: "Jaipur",
+                        district: "Jaipur",
+                        state: "Rajasthan",
+                        pincode: "302012",
+
+                        student: "Rahul Sharma",
+                        father: "Mahesh Sharma",
+                        mother: "Suman Sharma",
+                        class: "10",
+                        sectionclass: "A",
+                        dob: "12-05-2009",
+                        contact: "9876543210",
+                        address: "Shyam Nagar, Jaipur",
+
+                        role: "Student",
+                        school_contact: "0141-2223344",
+
+                        imgstudent: "/assets/images/student.avif",
+                        imgsignature: "/assets/images/signature.avif",
+                        imglogo: "/assets/images/logo.avif"
+                    };
+
+                }
 
                 let html = template.html;
 
+                // SAFE REPLACE
                 Object.keys(previewData).forEach(key => {
-                    const value = previewData[key];
+                    const value = previewData[key] || '';
                     const regex = new RegExp(`{{${key}}}`, 'g');
                     html = html.replace(regex, value);
                 });
@@ -107,7 +147,6 @@ export default async function Home() {
                 preview.className = 'template-preview';
                 preview.innerHTML = html;
 
-                // FULL WIDTH & HEIGHT, NO ANIMATION
                 preview.style.width = '100%';
                 preview.style.height = '100%';
                 preview.style.transform = 'none';
