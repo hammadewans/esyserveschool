@@ -29,18 +29,20 @@ export default async function Home() {
 
         const title = document.createElement('h3');
         title.textContent = 'ID Card Templates';
-        title.className = 'text-center fw-bold mb-4';
+        title.className = 'text-center fw-bold mb-3';
         container.appendChild(title);
 
-        // FILTER BUTTONS
-        const filterBox = document.createElement('div');
-        filterBox.className = 'text-center mb-4';
-        filterBox.innerHTML = `
-            <button class="btn btn-outline-primary me-2 filter-btn active" data-type="all">All</button>
-            <button class="btn btn-outline-primary me-2 filter-btn" data-type="students">Students</button>
-            <button class="btn btn-outline-primary filter-btn" data-type="teacher">Teacher</button>
+        // 🔥 FILTER
+        const filterDiv = document.createElement('div');
+        filterDiv.className = 'text-center mb-4';
+
+        filterDiv.innerHTML = `
+            <button class="btn btn-sm btn-primary mx-1" data-filter="all">All</button>
+            <button class="btn btn-sm btn-outline-primary mx-1" data-filter="student">Student</button>
+            <button class="btn btn-sm btn-outline-primary mx-1" data-filter="teacher">Teacher</button>
         `;
-        container.appendChild(filterBox);
+
+        container.appendChild(filterDiv);
 
         const row = document.createElement('div');
         row.className = 'row g-4 justify-content-center';
@@ -48,88 +50,95 @@ export default async function Home() {
 
         app.appendChild(container);
 
-        // FUNCTION TO RENDER TEMPLATES
-        function renderTemplates(type = "all") {
+        let currentFilter = 'all';
+
+        // ================= COMMON SCHOOL DATA =================
+        const schoolData = {
+            school: "Sunrise Public School",
+            location: "Harsoli",
+            area: "Near Bus Stand",
+            city: "Muzaffarnagar",
+            district: "Muzaffarnagar",
+            state: "Uttar Pradesh",
+            pincode: "251001",
+            school_contact: "8923128781",
+
+            imglogo: window.location.origin + "/assets/images/logo.avif",
+            imgsignature: window.location.origin + "/assets/images/signature.avif"
+        };
+
+        schoolData.school_address = [
+            schoolData.location,
+            schoolData.area,
+            schoolData.city,
+            schoolData.district,
+            schoolData.state
+        ].filter(Boolean).join(', ') + ' - ' + schoolData.pincode;
+
+        // ================= RENDER =================
+        function renderTemplates() {
 
             row.innerHTML = '';
 
-            const filtered = type === "all"
-                ? templates
-                : templates.filter(t => t.type === type);
+            templates.forEach(template => {
 
-            filtered.forEach(template => {
+                let html = template.html || '';
 
-                let previewData = {};
+                const isTeacher =
+                    html.toLowerCase().includes('{{teacher}}') ||
+                    html.toLowerCase().includes('teacher');
 
-                // ================= TEACHER DATA =================
-                if (template.type === "teacher") {
+                // 🔥 FILTER LOGIC
+                if (
+                    currentFilter === 'teacher' && !isTeacher ||
+                    currentFilter === 'student' && isTeacher
+                ) return;
 
-                    previewData = {
-                        school: "Sunrise Public School",
-                        location: "Near Police Check Post Harsoli",
-                        area: "Harsoli",
-                        city: "Muzaffarnagar",
-                        district: "Muzaffarnagar",
-                        state: "Uttar Pradesh",
-                        pincode: "251001",
+                let userData = {};
 
+                if (isTeacher) {
+                    userData = {
+                        teacher: "Khushnuma Parveen",
                         name: "Khushnuma Parveen",
-                        father: "Nawab Ali",
-                        mother: "Not Required",
                         role: "Assistant Teacher",
-                        dob: "2003-02-04",
+                        father: "Nawab Ali",
+                        mother: "Saira Banu Nawab",
+                        dob: "21-4-2001",
                         contact: "8923128781",
-                        address: "Vill. Kabirpur Po. Harsoli District Muzaffarnagar",
-
-                        school_contact: "8006890786",
-
-                        imgteacher: "/assets/images/teacher.avif",
-                        imgsignature: "/assets/images/signature.avif",
-                        imglogo: "/assets/images/logo.avif"
+                        address: "Muzaffarnagar",
+                        imgteacher: window.location.origin + "/assets/images/student.avif"
                     };
-
-                }
-
-                // ================= STUDENT DATA =================
-                else {
-
-                    previewData = {
-                        school: "Sunrise Public School",
-                        location: "Near Bus Stand",
-                        area: "Shyam Nagar",
-                        city: "Jaipur",
-                        district: "Jaipur",
-                        state: "Rajasthan",
-                        pincode: "302012",
-
+                } else {
+                    userData = {
                         student: "Rahul Sharma",
+                        name: "Rahul Sharma",
+                        role: "Student",
                         father: "Mahesh Sharma",
-                        mother: "Suman Sharma",
+                        mother: "Sunita Sharma",
                         class: "10",
                         sectionclass: "A",
                         dob: "12-05-2009",
                         contact: "9876543210",
-                        address: "Shyam Nagar, Jaipur",
-
-                        role: "Student",
-                        school_contact: "0141-2223344",
-
-                        imgstudent: "/assets/images/student.avif",
-                        imgsignature: "/assets/images/signature.avif",
-                        imglogo: "/assets/images/logo.avif"
+                        address: "Jaipur",
+                        imgstudent: window.location.origin + "/assets/images/student.avif"
                     };
-
                 }
 
-                let html = template.html;
+                const previewData = {
+                    ...schoolData,
+                    ...userData
+                };
 
-                // SAFE REPLACE
+                // 🔥 REPLACE
                 Object.keys(previewData).forEach(key => {
-                    const value = previewData[key] || '';
-                    const regex = new RegExp(`{{${key}}}`, 'g');
-                    html = html.replace(regex, value);
+                    const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'gi');
+                    html = html.replace(regex, previewData[key] || '');
                 });
 
+                html = html.replace(/{{\s*teacher\s*}}/gi, previewData.name || '');
+                html = html.replace(/{{\s*student\s*}}/gi, previewData.name || '');
+
+                // ================= UI =================
                 const col = document.createElement('div');
                 col.className = 'col-12 col-md-6 col-lg-4 col-xl-3';
 
@@ -147,10 +156,11 @@ export default async function Home() {
                 preview.className = 'template-preview';
                 preview.innerHTML = html;
 
-                preview.style.width = '100%';
-                preview.style.height = '100%';
-                preview.style.transform = 'none';
-                preview.style.display = 'block';
+                // 🔥 SVG FIX (NO CROP)
+                preview.querySelectorAll('svg').forEach(svg => {
+                    svg.removeAttribute('width');
+                    svg.removeAttribute('height');
+                });
 
                 frame.appendChild(preview);
                 card.appendChild(name);
@@ -159,24 +169,29 @@ export default async function Home() {
                 row.appendChild(col);
 
             });
-
         }
 
-        // INITIAL LOAD
-        renderTemplates("all");
-
-        // FILTER CLICK
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        // 🔥 FILTER CLICK
+        filterDiv.querySelectorAll('button').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn')
-                    .forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const type = btn.dataset.type;
-                renderTemplates(type);
+
+                currentFilter = btn.dataset.filter;
+
+                filterDiv.querySelectorAll('button').forEach(b => {
+                    b.classList.remove('btn-primary');
+                    b.classList.add('btn-outline-primary');
+                });
+
+                btn.classList.add('btn-primary');
+                btn.classList.remove('btn-outline-primary');
+
+                renderTemplates();
             });
         });
 
-        // CSS
+        renderTemplates();
+
+        // ================= CSS =================
         const style = document.createElement('style');
         style.textContent = `
         .template-card{
@@ -191,26 +206,32 @@ export default async function Home() {
             font-weight:600;
             margin-bottom:10px;
             font-size:14px;
-            color:#444;
         }
 
         .template-frame{
             width:100%;
-            aspect-ratio:1/1;
-            display:block;
+            height:320px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#f8f9fa;
             overflow:hidden;
-            border-radius:8px;
         }
 
-        .template-preview svg{
+        .template-preview{
             width:100%;
             height:100%;
-            object-fit:contain;
+            display:flex;
+            align-items:center;
+            justify-content:center;
         }
 
-        .filter-btn.active{
-            background:#0d6efd;
-            color:white;
+        /* 🔥 NO CROP FIX */
+        .template-preview svg{
+            max-width:100%;
+            max-height:100%;
+            width:auto;
+            height:auto;
         }
         `;
         document.head.appendChild(style);
