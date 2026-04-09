@@ -98,20 +98,18 @@ export default async function Home() {
 
                 if (isTeacher) {
                     userData = {
-                        teacher: "Khushnuma Parveen",
-                        name: "Khushnuma Parveen",
+                        teacher: "Rahul Sharma",
                         role: "Assistant Teacher",
-                        father: "Nawab Ali",
-                        mother: "Saira Banu Nawab",
+                        father: "Mahesh Sharma",
+                        mother: "Sunita Sharma",
                         dob: "21-4-2001",
                         contact: "8923128781",
-                        address: "Muzaffarnagar",
+                        address: "Jaipur",
                         imgteacher: window.location.origin + "/assets/images/student.avif"
                     };
                 } else {
                     userData = {
                         student: "Rahul Sharma",
-                        name: "Rahul Sharma",
                         role: "Student",
                         father: "Mahesh Sharma",
                         mother: "Sunita Sharma",
