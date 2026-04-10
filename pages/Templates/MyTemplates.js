@@ -37,7 +37,6 @@ export default async function Home() {
         filterDiv.className = 'text-center mb-4';
 
         filterDiv.innerHTML = `
-            <button class="btn btn-sm btn-primary mx-1" data-filter="all">All</button>
             <button class="btn btn-sm btn-outline-primary mx-1" data-filter="student">Student</button>
             <button class="btn btn-sm btn-outline-primary mx-1" data-filter="teacher">Teacher</button>
         `;
@@ -50,7 +49,7 @@ export default async function Home() {
 
         app.appendChild(container);
 
-        let currentFilter = 'all';
+        let currentFilter = 'student';
 
         // ================= COMMON SCHOOL DATA =================
         const schoolData = {
