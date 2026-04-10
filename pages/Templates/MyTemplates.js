@@ -32,12 +32,12 @@ export default async function Home() {
         title.className = 'text-center fw-bold mb-3';
         container.appendChild(title);
 
-        // 🔥 FILTER
+        // 🔥 FILTER (ONLY 2 BUTTONS)
         const filterDiv = document.createElement('div');
         filterDiv.className = 'text-center mb-4';
 
         filterDiv.innerHTML = `
-            <button class="btn btn-sm btn-outline-primary mx-1" data-filter="student">Student</button>
+            <button class="btn btn-sm btn-primary mx-1" data-filter="student">Student</button>
             <button class="btn btn-sm btn-outline-primary mx-1" data-filter="teacher">Teacher</button>
         `;
 
@@ -73,6 +73,18 @@ export default async function Home() {
             schoolData.district,
             schoolData.state
         ].filter(Boolean).join(', ') + ' - ' + schoolData.pincode;
+
+        // ================= ACTIVE BUTTON UI =================
+        function setActive(filter) {
+            filterDiv.querySelectorAll('button').forEach(b => {
+                b.classList.remove('btn-primary');
+                b.classList.add('btn-outline-primary');
+            });
+
+            const activeBtn = filterDiv.querySelector(`[data-filter="${filter}"]`);
+            activeBtn.classList.add('btn-primary');
+            activeBtn.classList.remove('btn-outline-primary');
+        }
 
         // ================= RENDER =================
         function renderTemplates() {
@@ -126,7 +138,6 @@ export default async function Home() {
                     ...userData
                 };
 
-                // 🔥 REPLACE
                 Object.keys(previewData).forEach(key => {
                     const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'gi');
                     html = html.replace(regex, previewData[key] || '');
@@ -135,7 +146,6 @@ export default async function Home() {
                 html = html.replace(/{{\s*teacher\s*}}/gi, previewData.name || '');
                 html = html.replace(/{{\s*student\s*}}/gi, previewData.name || '');
 
-                // ================= UI =================
                 const col = document.createElement('div');
                 col.className = 'col-12 col-md-6 col-lg-4 col-xl-3';
 
@@ -153,7 +163,6 @@ export default async function Home() {
                 preview.className = 'template-preview';
                 preview.innerHTML = html;
 
-                // 🔥 SVG FIX (NO CROP)
                 preview.querySelectorAll('svg').forEach(svg => {
                     svg.removeAttribute('width');
                     svg.removeAttribute('height');
@@ -173,19 +182,13 @@ export default async function Home() {
             btn.addEventListener('click', () => {
 
                 currentFilter = btn.dataset.filter;
-
-                filterDiv.querySelectorAll('button').forEach(b => {
-                    b.classList.remove('btn-primary');
-                    b.classList.add('btn-outline-primary');
-                });
-
-                btn.classList.add('btn-primary');
-                btn.classList.remove('btn-outline-primary');
-
+                setActive(currentFilter);
                 renderTemplates();
             });
         });
 
+        // INIT
+        setActive(currentFilter);
         renderTemplates();
 
         // ================= CSS =================
@@ -223,7 +226,6 @@ export default async function Home() {
             justify-content:center;
         }
 
-        /* 🔥 NO CROP FIX */
         .template-preview svg{
             max-width:100%;
             max-height:100%;
