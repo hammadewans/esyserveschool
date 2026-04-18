@@ -75,9 +75,6 @@ export default async function Students(studentId) {
     const motherName = el('input', 'form-control');
     motherName.value = studentData?.mother ?? '';
 
-    const rollNo = el('input', 'form-control');
-    rollNo.type = 'number';
-    rollNo.value = studentData?.rollno ?? '';
 
     const dob = el('input', 'form-control');
     dob.inputMode = 'numeric';
@@ -211,7 +208,6 @@ export default async function Students(studentId) {
         floating(studentName,'Student Name'),
         floating(fatherName,'Father Name'),
         floating(motherName,'Mother Name'),
-        floating(rollNo,'Roll No'),
         floating(dob,'Date of Birth'),
         floating(contact,'Contact Number'),
         floating(address,'Address'),
@@ -236,7 +232,6 @@ export default async function Students(studentId) {
         if (!studentName.value.trim()) return Toast.error('Student Name is required');
         if (!fatherName.value.trim()) return Toast.error('Father Name is required');
         if (!motherName.value.trim()) return Toast.error('Mother Name is required');
-        if (!rollNo.value.trim()) return Toast.error('Roll No is required');
         if (!contact.value.trim()) return Toast.error('Contact Number is required');
         if (!address.value.trim()) return Toast.error('Address is required');
 
@@ -247,7 +242,6 @@ export default async function Students(studentId) {
         formData.append('student', studentName.value.trim());
         formData.append('father', fatherName.value.trim());
         formData.append('mother', motherName.value.trim());
-        formData.append('rollno', rollNo.value.trim());
         formData.append('dob', dobFormatted);
         formData.append('contact', contact.value.trim());
         formData.append('address', address.value.trim());
