@@ -100,7 +100,6 @@ export default function Students() {
     const studentName = el('input', 'form-control'); studentName.placeholder='Student Name';
     const fatherName = el('input', 'form-control'); fatherName.placeholder='Father Name';
     const motherName = el('input', 'form-control'); motherName.placeholder='Mother Name';
-    const rollNo = el('input', 'form-control'); rollNo.type='number'; rollNo.placeholder='Roll No';
     const dob = el('input', 'form-control'); dob.placeholder='DD/MM/YYYY'; dob.inputMode = 'numeric'; dob.maxLength=10;
     dob.addEventListener('input', e=>{
         let v=e.target.value.replace(/\D/g,'').slice(0,8);
@@ -190,7 +189,6 @@ export default function Students() {
         floating(studentName,'Student Name'),
         floating(fatherName,'Father Name'),
         floating(motherName,'Mother Name'),
-        floating(rollNo,'Roll No'),
         floating(dob,'Date of Birth'),
         floating(contact,'Contact Number'),
         floating(address,'Address'),
@@ -258,7 +256,6 @@ export default function Students() {
         const studentVal = studentName.value.trim();
         const fatherVal = fatherName.value.trim();
         const motherVal = motherName.value.trim();
-        const rollVal = rollNo.value.trim();
         const dobVal = dob.value.trim();
         const contactVal = contact.value.trim();
         const addressVal = address.value.trim();
@@ -266,8 +263,6 @@ export default function Students() {
         if (!studentVal) { Toast.error('Student Name is required'); return; }
         if (!fatherVal) { Toast.error('Father Name is required'); return; }
         if (!motherVal) { Toast.error('Mother Name is required'); return; }
-        if (!rollVal) { Toast.error('Roll No is required'); return; }
-        if (!/^\d{1,2}$/.test(rollVal)) { Toast.error('Roll No must be 1 or 2 digits'); return; }
         if (!dobVal) { Toast.error('Date of Birth is required'); return; }
         if (!/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/.test(dobVal)) {
             Toast.error('Date of Birth must be in DD/MM/YYYY format'); return;
@@ -291,7 +286,6 @@ export default function Students() {
         formData.append('student', studentVal);
         formData.append('father', fatherVal);
         formData.append('mother', motherVal);
-        formData.append('rollno', rollVal);
         formData.append('dob', dobFormatted);
         formData.append('contact', contactVal);
         formData.append('address', addressVal);
@@ -317,7 +311,7 @@ export default function Students() {
 
             if (res.status === 200) {
                 Toast.success(data.message || 'Student added successfully!');
-                [studentName, fatherName, motherName, rollNo, dob, contact, address].forEach(input => input.value = '');
+                [studentName, fatherName, motherName, dob, contact, address].forEach(input => input.value = '');
                 preview.src = '';
                 preview.classList.add('d-none');
                 cameraIcon.classList.remove('d-none');
