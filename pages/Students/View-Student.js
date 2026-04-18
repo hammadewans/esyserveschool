@@ -84,7 +84,6 @@ function renderStudent(app, d) {
     stats.append(
         statBox('Class', d.class ?? '-'),
         statBox('Section', d.sectionclass ?? '-'),
-        statBox('Roll', d.rollno ?? '-')
     );
 
     // DETAILS
