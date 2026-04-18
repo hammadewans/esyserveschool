@@ -46,7 +46,6 @@ export default async function Students(studentId) {
     /* ================= SAFE VALUES ================= */
     const studentName = student?.student ?? '—';
     const studentClass = student?.class ?? '—';
-    const rollNo = student?.rollno ?? '—';
 
     /* ================= LAYOUT ================= */
     const wrapper = el('div', 'container py-4');
@@ -59,7 +58,7 @@ export default async function Students(studentId) {
     const header = el('div', 'card-header bg-white border-bottom text-center py-3');
     header.innerHTML = `
         <div class="fw-semibold">${studentName}</div>
-        <div class="small text-muted">Class ${studentClass} · Roll ${rollNo}</div>
+        <div class="small text-muted">Class ${studentClass}</div>
     `;
 
     /* ===== BODY ===== */
